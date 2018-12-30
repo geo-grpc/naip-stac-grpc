@@ -56,7 +56,7 @@ message MetadataRequest {
     repeated FieldName result_fields = 6; // if blank all fields returned
 }
 
-message MetadataResponse {
+message MetadataResult {
     repeated FieldInfo field_info = 1;
     uint64 offset_index = 2;
 }
