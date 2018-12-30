@@ -2,3 +2,5 @@
 *_pb2_grpc.py
 .idea
 venv
+index
+*.tar.gz

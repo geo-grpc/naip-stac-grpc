@@ -29,5 +29,4 @@ import "epl/protobuf/stac.proto";
 */
 service MetadataOperators {
     rpc Search(epl.protobuf.MetadataRequest) returns (stream epl.protobuf.MetadataResult) {}
-
 }
