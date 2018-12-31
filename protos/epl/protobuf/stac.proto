@@ -32,40 +32,19 @@ import "epl/protobuf/geometry_operators.proto";
 
 enum RelationshipType {
     FIELD_EQUALS = 0;
-    FIELD_NOT_EQUAL = 1;
-    FIELD_GREATER = 2;
-    FIELD_LESS = 3;
+    FIELD_NOT_EQUAL = 2;
+    FIELD_GREATER_EQUAL = 4;
+    FIELD_LESS_EQUAL = 8;
+    FIELD_GREATER = 16;
+    FIELD_LESS = 32;
+    FIELD_RANGE = 64;
+    FIELD_NOT_RANGE = 128;
 }
 
 enum SortDirection {
     NOT_SORTED = 0;
     DESCENDING = 1;
     ASCENDING = 2;
-}
-
-message MetadataRequest {
-    Query query = 1;
-    uint32 limit = 2;
-    uint64 offset = 3;
-
-    // TODO allow multiple sort fields?
-    SortDirection sort_direction = 4;
-    FieldName sort_field = 5;
-
-    // this is a nice way to exclude heavier items like geometries
-    repeated FieldName result_fields = 6; // if blank all fields returned
-}
-
-message MetadataResult {
-    repeated FieldInfo field_info = 1;
-    uint64 offset_index = 2;
-}
-
-message Query {
-    repeated Query and = 1;
-    repeated Query or = 2;
-    FieldInfo field_info = 3;
-    RelationshipType relationship = 4;
 }
 
 enum FieldName {
@@ -79,12 +58,116 @@ enum FieldName {
     // 200 - 399 reserved for vendors
 }
 
+message MetadataRequest {
+    Query query = 1;
+    uint32 limit = 2;
+    uint64 offset = 3;
+
+    SortDirection sort_direction = 4;
+    FieldName sort_field = 5;
+
+    // this is a nice way to exclude heavier items like geometries
+    repeated FieldName result_fields = 6; // if blank all fields returned
+}
+
+message Query {
+    repeated Query query_and = 1;
+    repeated Query query_or = 2;
+    FieldInfo field_info = 3;
+    RelationshipType relationship = 4;
+}
 
 message FieldInfo {
-    FieldName fieldName = 1;
+    FieldName field_name = 1;
     int64 int64 = 2;
     double double = 3;
     epl.protobuf.GeometryBagData geometry = 4;
     epl.protobuf.EnvelopeData bbox = 5;
-    google.protobuf.Timestamp datetimez = 6;
+    google.protobuf.Timestamp timestamp_utc = 6;
 }
+
+message MetadataResult {
+    repeated FieldInfo field_info = 1;
+    uint64 offset_index = 2;
+}
+
+message DoubleField {
+    double value = 1;
+    RelationshipType rel_type = 2;
+    double range_value = 3;
+    bool sort_by = 4;
+    SortDirection sort_direction = 5;
+}
+
+message Int64Field {
+    int64 value = 1;
+    RelationshipType rel_type = 2;
+    int64 range_value = 3;
+    bool sort_by = 4;
+    SortDirection sort_direction = 5;
+}
+
+// TODO make a DateField
+message TimestampField {
+    google.protobuf.Timestamp value = 1;
+    RelationshipType rel_type = 2;
+    google.protobuf.Timestamp range_value = 3;
+    bool sort_by = 4;
+    SortDirection sort_direction = 5;
+}
+
+message StringField {
+    string value = 1;
+    RelationshipType rel_type = 2;
+    string range_value = 3;
+    bool sort_by = 4;
+    SortDirection sort_direction = 5;
+}
+
+message GeometryField {
+    epl.protobuf.GeometryBagData value = 1;
+    epl.protobuf.ServiceOperatorType relational_operator = 2;
+    epl.protobuf.OperatorRequest geometry_operator = 3;
+}
+
+message BBoxField {
+    double upper_left = 1;
+    double lower_right = 2;
+    double upper_right = 3;
+    double lower_left = 4;
+}
+
+message MetadataRequest2 {
+    uint32 limit = 1;
+    uint64 offset = 2;
+
+    SortDirection sort_direction = 3;
+    FieldName sort_field = 4;
+
+    // this is a nice way to exclude heavier items like geometries
+    repeated FieldName result_fields = 5; // if blank all fields returned
+
+    // TODO really, these should be a float, but python shits the bed at the idea of a 4byte float.
+    DoubleField eo_cloud_cover = 6;
+    DoubleField eo_sun_azimuth = 7;
+    DoubleField eo_sun_elevation = 8;
+    DoubleField eo_gsd = 9;
+    DoubleField eo_off_nadir = 10;
+    // TODO really, these should be a float, but python shits the bed at the idea of a 4byte float.
+
+    BBoxField eo_bbox = 11;
+    GeometryField eo_geometry = 12;
+
+
+    reserved 13 to 200;
+    TimestampField src_img_date = 201;
+    StringField state_initials = 202;
+    StringField filename = 203;
+
+
+    reserved 500 to max;
+}
+
+
+
+
