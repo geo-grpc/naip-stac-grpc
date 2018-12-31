@@ -55,11 +55,7 @@ def construct_query(message: stac):
             if full_name == stac.BBoxField.DESCRIPTOR.full_name:
                 print(full_name)
             elif full_name == stac.GeometryField.DESCRIPTOR.full_name:
-                srid = 4326
-                if value1.HasField("spatial_reference"):
-                    spatial_reference = getattr(value1, "spatial_reference")
-                    srid = 4325 if spatial_reference.wkid == 0 else spatial_reference.wkid
-                wkt = WKTElement(value1.wkt[0], srid=srid)
+                wkt = WKTElement(value1.wkt[0], srid=4326)
                 current_and = add_and(naip_visual.c.wkb_geometry.ST_Intersects(wkt), current_and)
             elif full_name == stac.DoubleField.DESCRIPTOR.full_name or \
                     full_name == stac.Int64Field.DESCRIPTOR.full_name or \

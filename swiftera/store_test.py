@@ -203,16 +203,3 @@ class TestStore(unittest.TestCase):
 
         self.assertEqual(2, len(result))
 
-    def test_geometry_2(self):
-        engine = create_engine('postgresql://user:cabbage@localhost:5432/testdb', echo=True)
-
-        # 42.6609° N, 77.0539° W
-        geometry_bag = geometry.GeometryBagData(wkt=["POINT(-77.0539 42.6609)"],
-                                                spatial_reference=geometry.SpatialReferenceData(wkid=4269))
-        metadata_request = stac.MetadataRequest2(eo_geometry=stac.GeometryField(value=geometry_bag))
-
-        query = store.construct_query(metadata_request)
-        result = list(store.execute_query(query, engine))
-        print(result[0])
-
-        self.assertEqual(2, len(result))
