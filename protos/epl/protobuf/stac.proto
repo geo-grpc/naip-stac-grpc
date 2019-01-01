@@ -47,6 +47,30 @@ enum SortDirection {
     ASCENDING = 2;
 }
 
+enum EO_BAND {
+    UNKNOWN_BAND = 0;
+    ULTRA_BLUE = 2;
+    BLUE = 4;
+    GREEN = 8;
+    RED = 16;
+    RGB = 28;
+    NEAR_INFRARED = 32;
+    RGBIR = 60;
+    SWIR_1 = 64;
+    SWIR_2 = 128;
+    PANCHROMATIC = 256;
+    CIRRUS = 512;
+    TIR_1 = 1024;
+    TIR_2 = 2048;
+}
+
+enum STAC_ASSET_TYPE {
+    UNKNOWN_ASSET = 0;
+    JPEG = 1;
+    GEOTIFF = 2;
+    LERC = 3;
+}
+
 message DoubleField {
     double value = 1;
     RelationshipType rel_type = 2;
@@ -55,10 +79,10 @@ message DoubleField {
     SortDirection sort_direction = 5;
 }
 
-message Int64Field {
-    int64 value = 1;
+message StringField {
+    string value = 1;
     RelationshipType rel_type = 2;
-    int64 range_value = 3;
+    string range_value = 3;
     bool sort_by = 4;
     SortDirection sort_direction = 5;
 }
@@ -72,13 +96,6 @@ message TimestampField {
     SortDirection sort_direction = 5;
 }
 
-message StringField {
-    string value = 1;
-    RelationshipType rel_type = 2;
-    string range_value = 3;
-    bool sort_by = 4;
-    SortDirection sort_direction = 5;
-}
 
 message GeometryField {
     epl.protobuf.GeometryData geometry = 1;
@@ -121,8 +138,10 @@ message MetadataRequest {
     BBoxField eo_bbox = 11;
     GeometryField eo_geometry = 12;
 
+    EO_BAND eo_bands = 13;
+    repeated STAC_ASSET_TYPE eo_asset_type = 14;
 
-    reserved 13 to 200;
+    reserved 15 to 200;
     TimestampField src_img_date = 201;
     StringField state_initials = 202;
     StringField filename = 203;

@@ -2,6 +2,7 @@ import unittest
 from epl.protobuf import geometry_operators_pb2 as geometry
 from epl.protobuf import stac_pb2 as stac
 from swiftera import store
+from swiftera import parse as store2
 from google.protobuf.timestamp_pb2 import Timestamp
 
 from datetime import datetime, timezone
@@ -165,3 +166,12 @@ class TestStore(unittest.TestCase):
 
         self.assertLessEqual(3, len(result))
 
+    def test_metadata_results(self):
+        eo_geometry = stac.GeometryField(geometry=geometry.GeometryData(wkt="POINT(-77.0539 42.6609)"))
+        metadata_request = stac.MetadataRequest(eo_geometry=eo_geometry)
+
+        query = self.postgres_access.construct_query(metadata_request)
+        query_result = self.postgres_access.execute_query(query)
+        for metadata_result in self.postgres_access.query_to_metadata_result(query_result):
+            self.assertEqual(1.0, metadata_result.eo_gsd)
+            self.assertTrue(metadata_result.filename.startswith('m_4207724_se_18_1_'))

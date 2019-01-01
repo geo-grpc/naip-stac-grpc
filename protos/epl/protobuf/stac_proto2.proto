@@ -31,102 +31,14 @@ import "google/protobuf/timestamp.proto";
 import "epl/protobuf/geometry_operators.proto";
 import "epl/protobuf/stac.proto";
 
-//enum RelationshipType {
-//    FIELD_EQUALS = 0;
-//    FIELD_NOT_EQUAL = 2;
-//    FIELD_GREATER_EQUAL = 4;
-//    FIELD_LESS_EQUAL = 8;
-//    FIELD_GREATER = 16;
-//    FIELD_LESS = 32;
-//    FIELD_RANGE = 64;
-//    FIELD_NOT_RANGE = 128;
-//}
-//
-//enum SortDirection {
-//    NOT_SORTED = 0;
-//    DESCENDING = 1;
-//    ASCENDING = 2;
-//}
 
-//message DoubleField {
-//    required double value = 1;
-//    optional RelationshipType rel_type = 2;
-//    optional double range_value = 3;
-//    optional bool sort_by = 4;
-//    optional SortDirection sort_direction = 5;
-//}
-//
-//message Int64Field {
-//    required int64 value = 1;
-//    optional RelationshipType rel_type = 2;
-//    optional int64 range_value = 3;
-//    optional bool sort_by = 4;
-//    optional SortDirection sort_direction = 5;
-//}
-//
-//// TODO make a DateField
-//message TimestampField {
-//    required google.protobuf.Timestamp value = 1;
-//    optional RelationshipType rel_type = 2;
-//    optional google.protobuf.Timestamp range_value = 3;
-//    optional bool sort_by = 4;
-//    optional SortDirection sort_direction = 5;
-//}
-//
-//message StringField {
-//    required string value = 1;
-//    optional RelationshipType rel_type = 2;
-//    optional string range_value = 3;
-//    optional bool sort_by = 4;
-//    optional SortDirection sort_direction = 5;
-//}
-//
-//message GeometryField {
-//    optional epl.protobuf.GeometryBagData geometry_bag = 1;
-//    optional epl.protobuf.ServiceOperatorType relational_operator = 2;
-//    optional epl.protobuf.OperatorRequest geometry_operator = 3;
-//}
-//
-//message BBoxField {
-//    required double upper_left = 1;
-//    required double lower_right = 2;
-//    required double upper_right = 3;
-//    required double lower_left = 4;
-//}
-
-//message MetadataRequest {
-//    optional uint32 limit = 1;
-//    optional uint64 offset = 2;
-//
-//    optional SortDirection sort_direction = 3;
-//    optional string sort_field = 4;
-//    repeated string result_fields = 5; // if blank all fields returned
-//
-//    // TODO really, these should be a float, but python shits the bed at the idea of a 4byte float.
-//    optional DoubleField eo_cloud_cover = 6;
-//    optional DoubleField eo_sun_azimuth = 7;
-//    optional DoubleField eo_sun_elevation = 8;
-//    optional DoubleField eo_gsd = 9;
-//    optional DoubleField eo_off_nadir = 10;
-//    // TODO really, these should be a float, but python shits the bed at the idea of a 4byte float.
-//
-//    optional BBoxField eo_bbox = 11;
-//    optional GeometryField eo_geometry = 12;
-//
-//
-//    reserved 13 to 200;
-//    optional TimestampField src_img_date = 201;
-//    optional StringField state_initials = 202;
-//    optional StringField filename = 203;
-//
-//
-//    reserved 500 to max;
-//}
-
-
+message EOAsset {
+    required string href = 1;
+    required STAC_ASSET_TYPE eo_cloud_cover = 2;
+    optional EO_BAND eo_band = 3;
+}
 
 message MetadataResult {
-
     //    https://github.com/protocolbuffers/protobuf/issues/1606
     optional double eo_cloud_cover = 6;
     optional double eo_sun_azimuth = 7;
@@ -137,7 +49,9 @@ message MetadataResult {
 
     optional BBoxField eo_bbox = 11;
     optional epl.protobuf.GeometryBagData eo_geometry = 12;
-    reserved 13 to 200;
+    map<string, EOAsset> asset_map = 13;
+
+    reserved 14 to 200;
 
     optional google.protobuf.Timestamp src_img_date = 201;
     optional string state_initials = 202;

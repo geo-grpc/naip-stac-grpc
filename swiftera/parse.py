@@ -1,8 +1,6 @@
 from epl.protobuf import stac_proto2_pb2
-from epl.protobuf import stac_pb2 as stac
-from swiftera.store import PostgresStore
 from datetime import datetime, date, timezone
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 from collections import namedtuple
 from google.protobuf.descriptor import FieldDescriptor
 from google.protobuf.timestamp_pb2 import Timestamp
@@ -73,17 +71,17 @@ def timestamp_from_datetime(dt):
     return ts
 
 
-def query_to_metadata(query_result_row: Tuple, headers: List, postgres_connection):
+def to_metadata_result(query_result_row: Tuple, header: List, db_message_map: Dict) -> stac_proto2_pb2.MetadataResult:
     context = dict()
     message_as_namedtuple(stac_proto2_pb2.DESCRIPTOR.message_types_by_name['MetadataResult'], context)
 
     metadata_results = stac_proto2_pb2.MetadataResult()
     for index, item in enumerate(query_result_row):
-        db_key = headers[index]
-        if db_key not in postgres_connection.db_message_map:
+        db_key = header[index]
+        if db_key not in db_message_map:
             continue
 
-        message_key = postgres_connection.db_message_map[db_key]
+        message_key = db_message_map[db_key]
         field_name = metadata_results.DESCRIPTOR.fields_by_name[message_key].name
 
         proto_type = getattr(context['MetadataResult'], field_name)
