@@ -47,50 +47,6 @@ enum SortDirection {
     ASCENDING = 2;
 }
 
-enum FieldName {
-    // 0 - 199 reserved for EO
-    ALL_FIELDS = 0;
-    EO_GEOMETRY = 1;
-    EO_CLOUDS = 2;
-    EO_BBOX = 3;
-    EO_GSD = 4;
-
-    // 200 - 399 reserved for vendors
-}
-
-message MetadataRequest {
-    Query query = 1;
-    uint32 limit = 2;
-    uint64 offset = 3;
-
-    SortDirection sort_direction = 4;
-    FieldName sort_field = 5;
-
-    // this is a nice way to exclude heavier items like geometries
-    repeated FieldName result_fields = 6; // if blank all fields returned
-}
-
-message Query {
-    repeated Query query_and = 1;
-    repeated Query query_or = 2;
-    FieldInfo field_info = 3;
-    RelationshipType relationship = 4;
-}
-
-message FieldInfo {
-    FieldName field_name = 1;
-    int64 int64 = 2;
-    double double = 3;
-    epl.protobuf.GeometryBagData geometry = 4;
-    epl.protobuf.EnvelopeData bbox = 5;
-    google.protobuf.Timestamp timestamp_utc = 6;
-}
-
-message MetadataResult {
-    repeated FieldInfo field_info = 1;
-    uint64 offset_index = 2;
-}
-
 message DoubleField {
     double value = 1;
     RelationshipType rel_type = 2;
@@ -125,9 +81,10 @@ message StringField {
 }
 
 message GeometryField {
-    epl.protobuf.GeometryBagData value = 1;
-    epl.protobuf.ServiceOperatorType relational_operator = 2;
-    epl.protobuf.OperatorRequest geometry_operator = 3;
+    epl.protobuf.GeometryData geometry = 1;
+    epl.protobuf.GeometryBagData geometry_bag = 2;
+    epl.protobuf.ServiceOperatorType relational_operator = 3;
+    epl.protobuf.OperatorRequest geometry_operator = 4;
 }
 
 message BBoxField {
@@ -137,15 +94,21 @@ message BBoxField {
     double lower_left = 4;
 }
 
-message MetadataRequest2 {
+
+
+enum FieldName {
+    ALL_FIELD_NAMES = 0;
+    EO_CLOUD_COVER = 1;
+}
+
+
+message MetadataRequest {
     uint32 limit = 1;
     uint64 offset = 2;
 
     SortDirection sort_direction = 3;
-    FieldName sort_field = 4;
-
-    // this is a nice way to exclude heavier items like geometries
-    repeated FieldName result_fields = 5; // if blank all fields returned
+    string sort_field = 4;
+    repeated string result_fields = 5; // if blank all fields returned
 
     // TODO really, these should be a float, but python shits the bed at the idea of a 4byte float.
     DoubleField eo_cloud_cover = 6;
@@ -167,7 +130,4 @@ message MetadataRequest2 {
 
     reserved 500 to max;
 }
-
-
-
 

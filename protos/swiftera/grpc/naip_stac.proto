@@ -30,8 +30,3 @@ import "epl/protobuf/stac.proto";
 service MetadataOperators {
     rpc Search(epl.protobuf.MetadataRequest) returns (stream epl.protobuf.MetadataResult) {}
 }
-
-enum FieldName {
-    UNKNOWN_FIELD = 0;
-    SRC_IMG_DATE = 200;
-}
