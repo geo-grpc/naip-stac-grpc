@@ -71,6 +71,14 @@ enum STAC_ASSET_TYPE {
     LERC = 3;
 }
 
+message FloatField {
+    float value = 1;
+    RelationshipType rel_type = 2;
+    float range_value = 3;
+    bool sort_by = 4;
+    SortDirection sort_direction = 5;
+}
+
 message DoubleField {
     double value = 1;
     RelationshipType rel_type = 2;
@@ -112,7 +120,6 @@ message BBoxField {
 }
 
 
-
 enum FieldName {
     ALL_FIELD_NAMES = 0;
     EO_CLOUD_COVER = 1;
@@ -127,13 +134,11 @@ message MetadataRequest {
     string sort_field = 4;
     repeated string result_fields = 5; // if blank all fields returned
 
-    // TODO really, these should be a float, but python shits the bed at the idea of a 4byte float.
-    DoubleField eo_cloud_cover = 6;
-    DoubleField eo_sun_azimuth = 7;
-    DoubleField eo_sun_elevation = 8;
-    DoubleField eo_gsd = 9;
-    DoubleField eo_off_nadir = 10;
-    // TODO really, these should be a float, but python shits the bed at the idea of a 4byte float.
+    FloatField eo_cloud_cover = 6;
+    FloatField eo_sun_azimuth = 7;
+    FloatField eo_sun_elevation = 8;
+    FloatField eo_gsd = 9;
+    FloatField eo_off_nadir = 10;
 
     BBoxField eo_bbox = 11;
     GeometryField eo_geometry = 12;

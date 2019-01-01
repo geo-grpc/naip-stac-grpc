@@ -70,11 +70,7 @@ class PostgresStore:
                             geometry_element = WKBElement(geometry_value.wkb, srid=4326)
 
                     current_and = self.add_and(naip_visual.c.wkb_geometry.ST_Intersects(geometry_element), current_and)
-                elif full_name == stac.DoubleField.DESCRIPTOR.full_name or \
-                        full_name == stac.Int64Field.DESCRIPTOR.full_name or \
-                        full_name == stac.TimestampField.DESCRIPTOR.full_name or \
-                        full_name == stac.StringField.DESCRIPTOR.full_name:
-
+                else:
                     value1 = getattr(field_obj, "value")
                     rel_type = getattr(field_obj, "rel_type")
                     value2 = getattr(field_obj, "range_value")

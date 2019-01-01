@@ -40,7 +40,7 @@ class TestStore(unittest.TestCase):
         metadata_req = stac.MetadataRequest(src_img_date=src_img_date)
 
         # https://stackoverflow.com/a/22771612/445372
-        metadata_req.eo_gsd.CopyFrom(stac.DoubleField(value=.75, rel_type=stac.FIELD_LESS_EQUAL))
+        metadata_req.eo_gsd.CopyFrom(stac.FloatField(value=.75, rel_type=stac.FIELD_LESS_EQUAL))
 
         limit = 40
         offset = 0
@@ -61,19 +61,19 @@ class TestStore(unittest.TestCase):
         self.assertEqual(0, 0)
 
     def test_simple_gsd_1(self):
-        metadata_request = stac.MetadataRequest(eo_gsd=stac.DoubleField(value=0.75))
+        metadata_request = stac.MetadataRequest(eo_gsd=stac.FloatField(value=0.75))
         query = self.postgres_access.construct_query(metadata_request)
         result = self.postgres_access.execute_query(query)
         self.assertEqual(0, len(list(result)))
 
     def test_simple_gsd_2(self):
-        metadata_request = stac.MetadataRequest(eo_gsd=stac.DoubleField(value=0.6))
+        metadata_request = stac.MetadataRequest(eo_gsd=stac.FloatField(value=0.6, rel_type=stac.FIELD_LESS_EQUAL))
         query = self.postgres_access.construct_query(metadata_request)
         result = self.postgres_access.execute_query(query)
         self.assertEqual(100, len(list(result)))
 
     def test_simple_gsd_3(self):
-        metadata_request = stac.MetadataRequest(eo_gsd=stac.DoubleField(value=0.6, rel_type=stac.FIELD_NOT_EQUAL))
+        metadata_request = stac.MetadataRequest(eo_gsd=stac.FloatField(value=0.6, rel_type=stac.FIELD_NOT_EQUAL))
         query = self.postgres_access.construct_query(metadata_request)
         result = self.postgres_access.execute_query(query)
         for row in result:
@@ -125,7 +125,7 @@ class TestStore(unittest.TestCase):
         src_img_date = stac.TimestampField(value=timestamp, rel_type=stac.FIELD_RANGE, range_value=timestamp_range)
 
         # gsd value
-        eo_gsd = stac.DoubleField(value=0.6)
+        eo_gsd = stac.FloatField(value=0.6)
 
         # request object
         metadata_request = stac.MetadataRequest(src_img_date=src_img_date, eo_gsd=eo_gsd)
@@ -142,7 +142,7 @@ class TestStore(unittest.TestCase):
         src_img_date = stac.TimestampField(value=timestamp, rel_type=stac.FIELD_RANGE, range_value=timestamp_range)
 
         # gsd value
-        eo_gsd = stac.DoubleField(value=0.6)
+        eo_gsd = stac.FloatField(value=0.6, rel_type=stac.FIELD_LESS_EQUAL)
 
         # state initials
         filename = stac.StringField(value="m_4112305_nw_10_h_20160813_20161004.tif")

@@ -8,7 +8,7 @@ https://github.com/geo-grpc/protobuf
 
 compile protocol buffers
 ```bash
-python3 -mgrpc_tools.protoc -I=./protos --python_out=./ ./protos/epl/protobuf/geometry_operators.proto ./protos/epl/protobuf/stac.proto
+python3 -mgrpc_tools.protoc -I=./protos --python_out=./ ./protos/epl/protobuf/geometry_operators.proto ./protos/epl/protobuf/stac.proto ./protos/epl/protobuf/stac_proto2.proto
 python3 -mgrpc_tools.protoc -I=./protos --python_out=./ --grpc_python_out=./      ./protos/swiftera/grpc/naip_stac.proto
 ```
 

@@ -31,21 +31,30 @@ import "google/protobuf/timestamp.proto";
 import "epl/protobuf/geometry_operators.proto";
 import "epl/protobuf/stac.proto";
 
+enum IAAS {
+    UNKNOWN = 0;
+    AWS = 1;
+    GCP = 2;
+    AZURE = 3;
+}
 
 message EOAsset {
     required string href = 1;
-    required STAC_ASSET_TYPE eo_cloud_cover = 2;
+    required STAC_ASSET_TYPE eo_asset_type = 2;
     optional EO_BAND eo_band = 3;
+    required IAAS bucket_iaas_host = 4;
+    optional string bucket_owner = 5;
+    optional string bucket_region = 6;
+    optional string bucket_ref = 7;
 }
 
 message MetadataResult {
     //    https://github.com/protocolbuffers/protobuf/issues/1606
-    optional double eo_cloud_cover = 6;
-    optional double eo_sun_azimuth = 7;
-    optional double eo_sun_elevation = 8;
-    optional double eo_gsd = 9;
-    optional double eo_off_nadir = 10;
-    // TODO really, these should be a float, but python shits the bed at the idea of a 4byte float.
+    optional float eo_cloud_cover = 6;
+    optional float eo_sun_azimuth = 7;
+    optional float eo_sun_elevation = 8;
+    optional float eo_gsd = 9;
+    optional float eo_off_nadir = 10;
 
     optional BBoxField eo_bbox = 11;
     optional epl.protobuf.GeometryBagData eo_geometry = 12;
