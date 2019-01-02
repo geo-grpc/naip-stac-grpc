@@ -1,6 +1,5 @@
 # naip-stac-grpc
-demo of STAC + gRPC + NAIP
-This is a first version of a gRPC service that tries to be STAC compliant. 
+This is a first version of a gRPC service for serving NAIP metadata that tries to be STAC compliant.
 
 STAC is described in further detail here:
 * https://github.com/radiantearth/stac-spec
@@ -20,6 +19,12 @@ AWS and ESRI teamed up to provide a bucket on s3 that is requester pays. More in
 ## STAC, Protocol Buffers, and gPRC
 The definitions for a stac item response are in [`protos/epl/protobuf/stac_item_result.proto`](https://github.com/geo-grpc/naip-stac-grpc/blob/master/protos/epl/protobuf/stac_item_result.proto). It is copied from the protocol buffer for stac defined here:
 * https://github.com/geo-grpc/protobuf
+
+There are a couple of distinctions from the STAC definitions. 
+* there isn't a properties container on the item result object. It could be added, but for the purposes of the demo it made it more difficult. 
+* there isn't a bands array on the item result object.
+
+Protobuf definitions have fields that are indexed by field numbers. As we want people to extend STAC for there own purposes the field numbers 201 to 500 are available for custom definitions. The field numbers from 1 to 200 and from 501 to max are reserved for STAC definitions. More keys could be released as needed.
 
 ## Project Setup 
 
