@@ -61,19 +61,19 @@ enum EO_INSTRUMENT {
 
 enum EO_BAND {
     UNKNOWN_BAND = 0;
-    ULTRA_BLUE_BAND = 2;
+    COASTAL_BAND = 2;
     BLUE_BAND = 4;
     GREEN_BAND = 8;
     RED_BAND = 16;
     RGB_BANDS = 28;
     NEAR_INFRARED_BAND = 32;
     RGBIR_BANDS = 60;
-    SWIR_1_BAND = 64;
-    SWIR_2_BAND = 128;
+    SWIR_16_BAND = 64;
+    SWIR_22_BAND = 128;
     PANCHROMATIC_BAND = 256;
     CIRRUS_BAND = 512;
-    TIR_1_BAND = 1024;
-    TIR_2_BAND = 2048;
+    LWIR_11_BAND = 1024;
+    LWIR_12_BAND = 2048;
 }
 
 enum ASSET_TYPE {
@@ -137,29 +137,33 @@ message GeometryField {
 
 
 message MetadataRequest {
-    uint32 limit = 1;
-    uint64 offset = 2;
+    StringField id = 1;
+    uint32 limit = 2;
+    uint64 offset = 3;
 
-    SortDirection sort_direction = 3;
-    string sort_field = 4;
+    reserved 4 to 5; // reserved for sorting request
+    // SortDirection sort_direction = 3;
+    // string sort_field = 4;
 
-    repeated string result_fields = 5; // if blank all fields returned
+    reserved 6 to 7; // reserved for requesting fields or excluding fields
+    // repeated string result_fields = 5; // if blank all fields returned
+    // repeated string excluded_result_fields = 5;
 
-    FloatField eo_cloud_cover = 6;
-    FloatField eo_sun_azimuth = 7;
-    FloatField eo_sun_elevation = 8;
-    FloatField eo_gsd = 9;
-    FloatField eo_off_nadir = 10;
-    FloatField eo_azimuth = 11;
+    FloatField eo_sun_azimuth = 8;
+    FloatField eo_sun_elevation = 9;
+    FloatField eo_gsd = 10;
+    FloatField eo_off_nadir = 11;
+    FloatField eo_azimuth = 12;
+    FloatField eo_cloud_cover = 13;
 
-    epl.protobuf.EnvelopeData bbox = 12;
-    GeometryField geometry = 13;
+    epl.protobuf.EnvelopeData bbox = 14;
+    GeometryField geometry = 15;
 
-    EO_BAND eo_bands = 14;
+    EO_BAND eo_bands = 16;
 
-    StringField id = 15;
 
-    reserved 16 to 200;
+
+    reserved 17 to 200;
     TimestampField src_img_date = 201;
     StringField usgsid = 202;
 

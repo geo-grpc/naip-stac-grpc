@@ -41,6 +41,16 @@ When mixing proto2 and proto3, there's a checklist of don't (like no 'required' 
 4. Do not use extension for anything except custom options.
 */
 
+message BandDetails {
+    optional string name = 1;
+    optional string common_name = 2;
+    optional string description = 3;
+    optional float gsd = 4;
+    optional float accuracy = 5;
+    optional float center_wavelength = 6;
+    optional float full_width_half_max = 7;
+}
+
 message Asset {
     optional string href = 1;
     optional ASSET_TYPE asset_type = 2;
@@ -55,17 +65,25 @@ message MetadataResult {
     optional string id = 1;
     optional EO_PLATFORM eo_platform = 2;
     optional EO_INSTRUMENT eo_instrument = 3;
-    optional float eo_cloud_cover = 6;
-    optional float eo_sun_azimuth = 7;
-    optional float eo_sun_elevation = 8;
-    optional float eo_gsd = 9;
-    optional float eo_off_nadir = 10;
+    optional uint32 eo_epsg = 4;
 
-    optional epl.protobuf.EnvelopeData bbox = 11;
-    optional epl.protobuf.GeometryBagData geometry = 12;
-    map<string, Asset> assets = 13;
+    reserved 5;
 
-    reserved 14 to 200;
+    map<string, Asset> assets = 6;
+
+    optional float eo_sun_azimuth = 8;
+    optional float eo_sun_elevation = 9;
+    optional float eo_gsd = 10;
+    optional float eo_off_nadir = 11;
+    optional float eo_azimuth = 12;
+    optional float eo_cloud_cover = 13;
+
+    optional epl.protobuf.EnvelopeData bbox = 14;
+    optional epl.protobuf.GeometryBagData geometry = 15;
+
+    repeated EO_BAND eo_bands = 16;
+
+    reserved 17 to 200;
 
     optional google.protobuf.Timestamp src_img_date = 201;
     optional string usgsid = 202;

@@ -18,6 +18,7 @@ kwargs = {
     'author_email': 'david@echoparklabs.com',
     'url': 'https://github.com/geo-grpc/naip-stac-grpc',
     'packages': find_packages(),
+    'version': open('VERSION').read(),
     'zip_safe': False
 }
 

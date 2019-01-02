@@ -6,10 +6,20 @@ demo of STAC + gRPC + NAIP
 protocol buffer for stac defined here:
 https://github.com/geo-grpc/protobuf
 
+install requirements:
+```bash
+pip install -r requirements
+```
+
 compile protocol buffers
 ```bash
 python3 -mgrpc_tools.protoc -I=./protos --python_out=./ ./protos/epl/protobuf/geometry_operators.proto ./protos/epl/protobuf/stac.proto ./protos/epl/protobuf/stac_item_result.proto 
-python3 -mgrpc_tools.protoc -I=./protos --python_out=./ --grpc_python_out=./      ./protos/swiftera/grpc/naip_stac.proto
+python3 -mgrpc_tools.protoc -I=./protos --grpc_python_out=./ ./protos/epl/grpc/naip_stac.proto
+```
+
+after compiling the proto files included above, install the packages:
+```bash
+python setup.py install
 ```
 
 ## Postgres Setup
@@ -24,3 +34,5 @@ brew install gdal2 --with-postgresql
 ```
 
 execute the `naip_import_aws.sh` script 
+
+## Testing
