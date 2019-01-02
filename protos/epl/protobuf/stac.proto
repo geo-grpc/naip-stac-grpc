@@ -31,14 +31,15 @@ import "google/protobuf/timestamp.proto";
 import "epl/protobuf/geometry_operators.proto";
 
 enum RelationshipType {
-    FIELD_EQUALS = 0;
-    FIELD_NOT_EQUAL = 2;
-    FIELD_GREATER_EQUAL = 4;
+    UNKNOWN_FIELD_REL = 0;
+    FIELD_EQUALS = 2;
+    FIELD_NOT_EQUAL = 4;
     FIELD_LESS_EQUAL = 8;
-    FIELD_GREATER = 16;
+    FIELD_GREATER_EQUAL = 16;
     FIELD_LESS = 32;
-    FIELD_RANGE = 64;
-    FIELD_NOT_RANGE = 128;
+    FIELD_GREATER = 64;
+    FIELD_RANGE = 128;
+    FIELD_NOT_RANGE = 256;
 }
 
 enum SortDirection {
@@ -49,19 +50,19 @@ enum SortDirection {
 
 enum EO_BAND {
     UNKNOWN_BAND = 0;
-    ULTRA_BLUE = 2;
-    BLUE = 4;
-    GREEN = 8;
-    RED = 16;
-    RGB = 28;
-    NEAR_INFRARED = 32;
-    RGBIR = 60;
-    SWIR_1 = 64;
-    SWIR_2 = 128;
-    PANCHROMATIC = 256;
-    CIRRUS = 512;
-    TIR_1 = 1024;
-    TIR_2 = 2048;
+    ULTRA_BLUE_BAND = 2;
+    BLUE_BAND = 4;
+    GREEN_BAND = 8;
+    RED_BAND = 16;
+    RGB_BANDS = 28;
+    NEAR_INFRARED_BAND = 32;
+    RGBIR_BANDS = 60;
+    SWIR_1_BAND = 64;
+    SWIR_2_BAND = 128;
+    PANCHROMATIC_BAND = 256;
+    CIRRUS_BAND = 512;
+    TIR_1_BAND = 1024;
+    TIR_2_BAND = 2048;
 }
 
 enum STAC_ASSET_TYPE {
@@ -69,6 +70,16 @@ enum STAC_ASSET_TYPE {
     JPEG = 1;
     GEOTIFF = 2;
     LERC = 3;
+    MRF = 4;
+    MRF_IDX = 5;
+    MRF_XML = 6;
+}
+
+enum IAAS {
+    UNKNOWN_IAAS = 0;
+    AWS = 1;
+    GCP = 2;
+    AZURE = 3;
 }
 
 message FloatField {
@@ -95,7 +106,6 @@ message StringField {
     SortDirection sort_direction = 5;
 }
 
-// TODO make a DateField
 message TimestampField {
     google.protobuf.Timestamp value = 1;
     RelationshipType rel_type = 2;
@@ -120,12 +130,6 @@ message BBoxField {
 }
 
 
-enum FieldName {
-    ALL_FIELD_NAMES = 0;
-    EO_CLOUD_COVER = 1;
-}
-
-
 message MetadataRequest {
     uint32 limit = 1;
     uint64 offset = 2;
@@ -144,7 +148,7 @@ message MetadataRequest {
     GeometryField eo_geometry = 12;
 
     EO_BAND eo_bands = 13;
-    repeated STAC_ASSET_TYPE eo_asset_type = 14;
+//    repeated STAC_ASSET_TYPE eo_asset_type = 14;
 
     reserved 15 to 200;
     TimestampField src_img_date = 201;

@@ -1,7 +1,26 @@
+"""
+Copyright 2017-2018 Echo Park Labs
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+For additional information, contact:
+
+email: info@echoparklabs.io
+"""
+
 from epl.protobuf import stac_pb2 as stac
 from epl.protobuf import stac_proto2_pb2
-from swiftera import parse
-from google.protobuf.timestamp_pb2 import Timestamp
+from swiftera import parse, asset
 from datetime import datetime, timezone
 
 from sqlalchemy import Table, Column, Integer, String, MetaData, Date, Float, create_engine
@@ -17,6 +36,7 @@ naip_visual = Table('naip_visual', metadata,
                     Column('srcimgdate', Date),
                     Column('res', Float),
                     Column('st', String),
+                    Column('usgsid', String),
                     Column('wkb_geometry', Geometry('POLYGON')))
 
 
@@ -42,17 +62,13 @@ class PostgresStore:
             return query_filter
         return and_(query_filter, current_and)
 
-    @staticmethod
-    def timestamp_from_datetime(dt):
-        ts = Timestamp()
-        ts.FromDatetime(dt)
-        return ts
-
     def construct_query(self, message: stac.MetadataRequest):
         current_and = None
+        ignored_fields = []
         # parsing https://stackoverflow.com/a/29150312/445372
         for field in message.DESCRIPTOR.fields:
             if field.type != field.TYPE_MESSAGE:
+                ignored_fields.append(field.name)
                 continue
             if message.HasField(field.name):
                 full_name = field.message_type.full_name
@@ -78,21 +94,26 @@ class PostgresStore:
                         value1 = datetime.fromtimestamp(getattr(value1, "seconds"), timezone.utc)
                         value2 = datetime.fromtimestamp(getattr(value2, "seconds"), timezone.utc)
 
-                    if rel_type == stac.FIELD_EQUALS:
-                        current_and = self.add_and(naip_visual.c[mapped_field] == value1, current_and)
-                    elif rel_type == stac.FIELD_NOT_EQUAL:
+                    if rel_type == stac.FIELD_NOT_EQUAL:
                         current_and = self.add_and(naip_visual.c[mapped_field] != value1, current_and)
                     elif rel_type == stac.FIELD_GREATER_EQUAL:
                         current_and = self.add_and(naip_visual.c[mapped_field] >= value1, current_and)
                     elif rel_type == stac.FIELD_LESS_EQUAL:
                         current_and = self.add_and(naip_visual.c[mapped_field] <= value1, current_and)
+                    elif rel_type == stac.FIELD_GREATER:
+                        current_and = self.add_and(naip_visual.c[mapped_field] > value1, current_and)
+                    elif rel_type == stac.FIELD_LESS:
+                        current_and = self.add_and(naip_visual.c[mapped_field] < value1, current_and)
                     elif rel_type == stac.FIELD_RANGE:
                         current_and = self.add_and(naip_visual.c[mapped_field] >= value1, current_and)
                         current_and = self.add_and(naip_visual.c[mapped_field] <= value2, current_and)
                     elif rel_type == stac.FIELD_NOT_RANGE:
                         current_and = self.add_and(naip_visual.c[mapped_field] < value1, current_and)
                         current_and = self.add_and(naip_visual.c[mapped_field] > value2, current_and)
+                    else:
+                        current_and = self.add_and(naip_visual.c[mapped_field] == value1, current_and)
 
+        print("IGNORING ELEMENTS {0} in SQL Query".format(', '.join(ignored_fields)))
         return current_and
 
     def execute_query(self, query_filter, limit=100, offset=0):
@@ -101,7 +122,16 @@ class PostgresStore:
         query_result = conn.execute(s)
         return query_result
 
-    def query_to_metadata_result(self, query_result: ResultProxy) -> stac_proto2_pb2.MetadataResult:
+    def query_to_metadata_result(self, query_result: ResultProxy, metadata_request: stac.MetadataRequest) -> stac_proto2_pb2.MetadataResult:
         headers = [y[0] for y in query_result.context.result_column_struct[0]]
         for query_result_row in query_result:
-            yield parse.to_metadata_result(query_result_row, headers, self.db_message_map)
+            metadata_result = parse.to_metadata_result(query_result_row, headers, self.db_message_map)
+            asset.extract_naip_s3_path(
+                metadata_request=metadata_request,
+                state=query_result_row[3],
+                year=query_result_row[2].year,
+                usgsid=query_result_row[4],
+                image_name=query_result_row[1],
+                metadata_result=metadata_result)
+
+            yield metadata_result

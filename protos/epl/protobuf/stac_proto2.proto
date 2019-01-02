@@ -31,13 +31,6 @@ import "google/protobuf/timestamp.proto";
 import "epl/protobuf/geometry_operators.proto";
 import "epl/protobuf/stac.proto";
 
-enum IAAS {
-    UNKNOWN = 0;
-    AWS = 1;
-    GCP = 2;
-    AZURE = 3;
-}
-
 message EOAsset {
     required string href = 1;
     required STAC_ASSET_TYPE eo_asset_type = 2;

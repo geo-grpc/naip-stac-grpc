@@ -2,7 +2,7 @@ import unittest
 from epl.protobuf import geometry_operators_pb2 as geometry
 from epl.protobuf import stac_pb2 as stac
 from swiftera import store
-from swiftera import parse as store2
+from swiftera import parse
 from google.protobuf.timestamp_pb2 import Timestamp
 
 from datetime import datetime, timezone
@@ -21,12 +21,6 @@ naip_visual = Table('naip_visual', metadata,
                     Column('wkb_geometry', Geometry('POLYGON')))
 
 
-def timestamp_from_datetime(dt):
-    ts = Timestamp()
-    ts.FromDatetime(dt)
-    return ts
-
-
 class TestStore(unittest.TestCase):
     def setUp(self):
         engine = create_engine('postgresql://user:cabbage@localhost:5432/testdb', echo=True)
@@ -36,7 +30,7 @@ class TestStore(unittest.TestCase):
         timestamp = Timestamp()
         timestamp.GetCurrentTime()
         dt = datetime(2014, 4, 4, 2, 23, 43)
-        src_img_date = stac.TimestampField(value=timestamp_from_datetime(dt), rel_type=stac.FIELD_GREATER_EQUAL)
+        src_img_date = stac.TimestampField(value=parse.timestamp_from_datetime(dt), rel_type=stac.FIELD_GREATER_EQUAL)
         metadata_req = stac.MetadataRequest(src_img_date=src_img_date)
 
         # https://stackoverflow.com/a/22771612/445372
@@ -49,16 +43,9 @@ class TestStore(unittest.TestCase):
             current_and = and_(naip_visual.c.srcimgdate >= datetime.fromtimestamp(metadata_req.src_img_date.value.seconds, timezone.utc))
         s = select([naip_visual], current_and).limit(limit).offset(offset)
 
-        # print(naip_stac.FieldName.Name(req.query.field_info.field_name))
-
-        dt = datetime.fromtimestamp(metadata_req.src_img_date.value.seconds, timezone.utc)
-
         conn = self.postgres_access.db_engine.connect()
         result = conn.execute(s)
-        for row in result:
-            print(row)
-        print(str(dt))
-        self.assertEqual(0, 0)
+        self.assertEqual(40, len(list(result)))
 
     def test_simple_gsd_1(self):
         metadata_request = stac.MetadataRequest(eo_gsd=stac.FloatField(value=0.75))
@@ -91,7 +78,6 @@ class TestStore(unittest.TestCase):
         self.assertEqual(0, len(list(result)))
 
     def test_simple_date_4(self):
-        engine = create_engine('postgresql://user:cabbage@localhost:5432/testdb', echo=True)
         timestamp = Timestamp()
         timestamp.GetCurrentTime()
 
@@ -102,11 +88,10 @@ class TestStore(unittest.TestCase):
         result = self.postgres_access.execute_query(query)
         stuff = list(result)
         self.assertEqual(100, len(stuff))
-        print(stuff[0])
 
     def test_complex_date(self):
-        timestamp = timestamp_from_datetime(datetime(2012, 6, 28))
-        timestamp_range = timestamp_from_datetime(datetime(2012, 6, 30))
+        timestamp = parse.timestamp_from_datetime(datetime(2012, 6, 28))
+        timestamp_range = parse.timestamp_from_datetime(datetime(2012, 6, 30))
         src_img_date = stac.TimestampField(value=timestamp, rel_type=stac.FIELD_RANGE, range_value=timestamp_range)
         metadata_request = stac.MetadataRequest(src_img_date=src_img_date)
 
@@ -120,8 +105,8 @@ class TestStore(unittest.TestCase):
 
     def test_date_range_and_double(self):
         # date range to search
-        timestamp = timestamp_from_datetime(datetime(2012, 6, 28))
-        timestamp_range = timestamp_from_datetime(datetime(2012, 6, 30))
+        timestamp = parse.timestamp_from_datetime(datetime(2012, 6, 28))
+        timestamp_range = parse.timestamp_from_datetime(datetime(2012, 6, 30))
         src_img_date = stac.TimestampField(value=timestamp, rel_type=stac.FIELD_RANGE, range_value=timestamp_range)
 
         # gsd value
@@ -137,8 +122,8 @@ class TestStore(unittest.TestCase):
 
     def test_complex_1(self):
         # date range to search
-        timestamp = timestamp_from_datetime(datetime(2016, 8, 13))
-        timestamp_range = timestamp_from_datetime(datetime(2018, 8, 13))
+        timestamp = parse.timestamp_from_datetime(datetime(2016, 8, 13))
+        timestamp_range = parse.timestamp_from_datetime(datetime(2018, 8, 13))
         src_img_date = stac.TimestampField(value=timestamp, rel_type=stac.FIELD_RANGE, range_value=timestamp_range)
 
         # gsd value
@@ -172,6 +157,23 @@ class TestStore(unittest.TestCase):
 
         query = self.postgres_access.construct_query(metadata_request)
         query_result = self.postgres_access.execute_query(query)
-        for metadata_result in self.postgres_access.query_to_metadata_result(query_result):
+        for metadata_result in self.postgres_access.query_to_metadata_result(query_result, metadata_request):
             self.assertEqual(1.0, metadata_result.eo_gsd)
-            self.assertTrue(metadata_result.filename.startswith('m_4207724_se_18_1_'))
+            self.assertTrue(metadata_result.HasField("eo_gsd"))
+
+            self.assertFalse(metadata_result.HasField("eo_sun_elevation"))
+            self.assertEqual(0.0, metadata_result.eo_sun_elevation)
+
+            self.assertTrue(metadata_result.HasField("eo_geometry"))
+
+            for key in metadata_result.asset_map:
+                eo_asset = metadata_result.asset_map[key]
+                self.assertTrue(eo_asset.bucket_ref.startswith("s3://naip-"))
+                self.assertEqual(stac.AWS, eo_asset.bucket_iaas_host)
+                self.assertEqual(stac.STAC_ASSET_TYPE.Value(key), eo_asset.eo_asset_type)
+                self.assertLess(0, eo_asset.eo_band & stac.GREEN_BAND)
+                self.assertLess(0, eo_asset.eo_band & stac.BLUE_BAND)
+                self.assertLess(0, eo_asset.eo_band & stac.RED_BAND)
+                self.assertLess(0, eo_asset.eo_band & stac.RGB_BANDS)
+
+                self.assertEqual(0, eo_asset.eo_band & stac.SWIR_1_BAND)
