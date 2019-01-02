@@ -1,9 +1,25 @@
 # naip-stac-grpc
 demo of STAC + gRPC + NAIP
+This is a first version of a gRPC service that tries to be STAC compliant. 
+
+STAC is described in further detail here:
+* https://github.com/radiantearth/stac-spec
+* https://github.com/radiantearth/stac-spec/blob/master/item-spec/item-spec.md
+* https://github.com/radiantearth/stac-spec/tree/master/extensions/eo
+* https://medium.com/radiant-earth-insights/the-state-of-stac-talk-and-sprint-3-recap-cd8eda3b8bdb
+
+gRPC services, protobuf binary, and the proto files that define them can be used separately, but they were designed to be used together for microservices communication. They are part of an open source intiaitive from Google. They're based off of Google's own internal RPC framework, Stubby. More info can be found here:
+* https://grpc.io/
+* https://grpc.io/docs/quickstart/python.html
+* https://developers.google.com/protocol-buffers/
+
+NAIP data:
+AWS and ESRI teamed up to provide a bucket on s3 that is requester pays. More information here:
+* https://registry.opendata.aws/naip/
 
 ## STAC, Protocol Buffers, and gPRC
 The definitions for a stac item response are in [`protos/epl/protobuf/stac_item_result.proto`](https://github.com/geo-grpc/naip-stac-grpc/blob/master/protos/epl/protobuf/stac_item_result.proto). It is copied from the protocol buffer for stac defined here:
-https://github.com/geo-grpc/protobuf
+* https://github.com/geo-grpc/protobuf
 
 ## Project Setup 
 
