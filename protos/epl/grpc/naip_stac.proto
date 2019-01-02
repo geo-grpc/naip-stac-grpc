@@ -18,7 +18,7 @@ For additional information, contact:
 email: info@echoparklabs.io
 */
 
-syntax = "proto3";
+syntax = "proto2";
 
 package swiftera.grpc;
 

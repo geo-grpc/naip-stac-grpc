@@ -32,20 +32,29 @@ import "google/protobuf/timestamp.proto";
 import "epl/protobuf/geometry_operators.proto";
 import "epl/protobuf/stac.proto";
 
+/*
+https://groups.google.com/forum/#!topic/protobuf/bO2L6-_t91Q
+When mixing proto2 and proto3, there's a checklist of don't (like no 'required' fields)
+1. All fields should be optional.
+2. Do not use custom default values.
+3. All enums should have first element with tag = 0.
+4. Do not use extension for anything except custom options.
+*/
+
 message Asset {
-    required string href = 1;
-    required ASSET_TYPE asset_type = 2;
+    optional string href = 1;
+    optional ASSET_TYPE asset_type = 2;
     optional EO_BAND eo_band = 3;
-    required IAAS bucket_iaas_host = 4;
+    optional IAAS bucket_iaas_host = 4;
     optional string bucket_owner = 5;
     optional string bucket_region = 6;
     optional string bucket_ref = 7;
 }
 
 message MetadataResult {
-    required string id = 1;
-    required EO_PLATFORM eo_platform = 2;
-    required EO_INSTRUMENT eo_instrument = 3;
+    optional string id = 1;
+    optional EO_PLATFORM eo_platform = 2;
+    optional EO_INSTRUMENT eo_instrument = 3;
     optional float eo_cloud_cover = 6;
     optional float eo_sun_azimuth = 7;
     optional float eo_sun_elevation = 8;

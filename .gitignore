@@ -5,3 +5,5 @@ venv
 index
 *.tar.gz
 __pycache__/
+dist
+epl.egg-info
