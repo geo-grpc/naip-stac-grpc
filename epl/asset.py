@@ -48,8 +48,9 @@ def write_asset(s3_path_template: str,
                                        bucket_ref=s3_path,
                                        asset_type=asset_type)
 
-    asset_key = stac_pb2.ASSET_TYPE.Name(asset_type)
-    metadata_asset_map[asset_key].CopyFrom(asset)
+    asset_band_key = "{0}-{1}".format(stac_pb2.ASSET_TYPE.Name(asset_type), stac_pb2.EO_BAND.Name(band_type))
+
+    metadata_asset_map[asset_band_key].CopyFrom(asset)
 
 
 def extract_naip_s3_path(metadata_request: stac_pb2.MetadataRequest,
@@ -61,21 +62,23 @@ def extract_naip_s3_path(metadata_request: stac_pb2.MetadataRequest,
     if metadata_request.eo_bands == stac_pb2.RGB_BANDS:
         return
 
-    resolution = '100cm' if metadata_result.eo_gsd == 1 else "60cmp"
+    resolution = '100cm' if metadata_result.eo_gsd == 1 else "60cm"
 
     bucket_list = ["naip-visualization", "naip-source", "naip-analytic"]
 
     for bucket in bucket_list:
         imagery_bands = stac_pb2.RGBIR_BANDS
+        band_string = 'rgbir'
         if bucket == 'naip-visualization':
             imagery_bands = stac_pb2.RGB_BANDS
+            band_string = 'rgb'
 
         s3_path_template = 's3://{0}/{1}/{2}/{3}/{4}/{5}/{6}.'.format(
             bucket,
             state,
             year,
             resolution,
-            imagery_bands,
+            band_string,
             usgsid[:5],
             image_name[:-13])
 

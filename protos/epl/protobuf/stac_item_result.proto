@@ -68,6 +68,7 @@ message MetadataResult {
     reserved 14 to 200;
 
     optional google.protobuf.Timestamp src_img_date = 201;
+    optional string usgsid = 202;
 }
 
 

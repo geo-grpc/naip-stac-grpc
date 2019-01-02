@@ -161,7 +161,7 @@ message MetadataRequest {
 
     reserved 16 to 200;
     TimestampField src_img_date = 201;
-
+    StringField usgsid = 202;
 
     reserved 500 to max;
 }

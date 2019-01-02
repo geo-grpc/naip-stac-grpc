@@ -50,6 +50,7 @@ class PostgresStore:
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['src_img_date'].name: 'srcimgdate',
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['id'].name: 'filename',
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['geometry'].name: 'wkb_geometry',
+            stac.MetadataRequest.DESCRIPTOR.fields_by_name['usgsid'].name: 'usgsid',
         }
         self.db_message_map = {}
         for key in self.message_db_map:
@@ -128,9 +129,9 @@ class PostgresStore:
             metadata_result = parse.to_metadata_result(query_result_row, headers, self.db_message_map)
             asset.extract_naip_s3_path(
                 metadata_request=metadata_request,
-                state=query_result_row[3],
+                state=query_result_row[4].lower(),
                 year=query_result_row[2].year,
-                usgsid=query_result_row[4],
+                usgsid=query_result_row[5],
                 image_name=query_result_row[1],
                 metadata_result=metadata_result)
 

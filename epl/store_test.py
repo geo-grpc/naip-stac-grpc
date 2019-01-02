@@ -169,7 +169,9 @@ class TestStore(unittest.TestCase):
                 asset = metadata_result.assets[key]
                 self.assertTrue(asset.bucket_ref.startswith("s3://naip-"))
                 self.assertEqual(stac.AWS, asset.bucket_iaas_host)
-                self.assertEqual(stac.ASSET_TYPE.Value(key), asset.asset_type)
+                asset_band_key = "{0}-{1}".format(stac.ASSET_TYPE.Name(asset.asset_type),
+                                                  stac.EO_BAND.Name(asset.eo_band))
+                self.assertEqual(key, asset_band_key)
                 self.assertLess(0, asset.eo_band & stac.GREEN_BAND)
                 self.assertLess(0, asset.eo_band & stac.BLUE_BAND)
                 self.assertLess(0, asset.eo_band & stac.RED_BAND)
