@@ -26,6 +26,7 @@ from google.protobuf.descriptor import FieldDescriptor
 from google.protobuf.timestamp_pb2 import Timestamp
 from geoalchemy2.elements import WKTElement, WKBElement
 import calendar
+import os
 
 _type_dict = {v: k for k, v in vars(FieldDescriptor).items() if k.startswith('TYPE_')}
 
@@ -108,6 +109,8 @@ def to_metadata_result(query_result_row: Tuple, header: List, db_message_map: Di
 
         proto_type = getattr(context['MetadataResult'], field_name)
         if isinstance(proto_type, str):
+            if message_key == 'id':
+                item = os.path.splitext(item)[0]
             setattr(metadata_results, message_key, item)
         elif context['Timestamp'] == proto_type:
             value = getattr(metadata_results, message_key)

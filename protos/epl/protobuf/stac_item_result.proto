@@ -84,7 +84,9 @@ message MetadataResult {
     optional epl.protobuf.GeometryBagData geometry = 15;
 
     // Difference from current STAC definition: bands are just the enums instead of the bandDetails
-    repeated EO_BAND eo_bands = 16;
+    // STAC has bands defined twice. once in assets and once in properties. should probably just be
+    // once.
+    optional EO_BAND eo_bands = 16;
 
     reserved 17 to 200;
 
