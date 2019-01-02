@@ -18,6 +18,7 @@ For additional information, contact:
 email: info@echoparklabs.io
 */
 
+//    https://github.com/protocolbuffers/protobuf/issues/1606
 syntax = "proto2";
 
 option java_multiple_files = true;
@@ -31,9 +32,9 @@ import "google/protobuf/timestamp.proto";
 import "epl/protobuf/geometry_operators.proto";
 import "epl/protobuf/stac.proto";
 
-message EOAsset {
+message Asset {
     required string href = 1;
-    required STAC_ASSET_TYPE eo_asset_type = 2;
+    required ASSET_TYPE asset_type = 2;
     optional EO_BAND eo_band = 3;
     required IAAS bucket_iaas_host = 4;
     optional string bucket_owner = 5;
@@ -42,22 +43,22 @@ message EOAsset {
 }
 
 message MetadataResult {
-    //    https://github.com/protocolbuffers/protobuf/issues/1606
+    required string id = 1;
+    required EO_PLATFORM eo_platform = 2;
+    required EO_INSTRUMENT eo_instrument = 3;
     optional float eo_cloud_cover = 6;
     optional float eo_sun_azimuth = 7;
     optional float eo_sun_elevation = 8;
     optional float eo_gsd = 9;
     optional float eo_off_nadir = 10;
 
-    optional BBoxField eo_bbox = 11;
-    optional epl.protobuf.GeometryBagData eo_geometry = 12;
-    map<string, EOAsset> asset_map = 13;
+    optional epl.protobuf.EnvelopeData bbox = 11;
+    optional epl.protobuf.GeometryBagData geometry = 12;
+    map<string, Asset> assets = 13;
 
     reserved 14 to 200;
 
     optional google.protobuf.Timestamp src_img_date = 201;
-    optional string state_initials = 202;
-    optional string filename = 203;
 }
 
 

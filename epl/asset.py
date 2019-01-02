@@ -18,8 +18,8 @@ For additional information, contact:
 email: info@echoparklabs.io
 """
 
-from epl.protobuf import stac_pb2, stac_proto2_pb2
-from typing import List
+from epl.protobuf import stac_pb2, stac_item_result_pb2
+
 asset_map = {
     'UNKNOWN_ASSET': 0,
     'JPEG': 1,
@@ -39,16 +39,17 @@ naip_s3_assets = {
 
 def write_asset(s3_path_template: str,
                 band_type: stac_pb2.EO_BAND,
-                asset_type: stac_pb2.STAC_ASSET_TYPE,
+                asset_type: stac_pb2.ASSET_TYPE,
                 metadata_asset_map):
     extension = naip_s3_assets[asset_type]
     s3_path = s3_path_template + extension
-    eo_asset = stac_proto2_pb2.EOAsset(eo_band=band_type,
+    asset = stac_item_result_pb2.Asset(eo_band=band_type,
                                        bucket_iaas_host=stac_pb2.AWS,
                                        bucket_ref=s3_path,
-                                       eo_asset_type=asset_type)
-    asset_key = stac_pb2.STAC_ASSET_TYPE.Name(asset_type)
-    metadata_asset_map[asset_key].CopyFrom(eo_asset)
+                                       asset_type=asset_type)
+
+    asset_key = stac_pb2.ASSET_TYPE.Name(asset_type)
+    metadata_asset_map[asset_key].CopyFrom(asset)
 
 
 def extract_naip_s3_path(metadata_request: stac_pb2.MetadataRequest,
@@ -56,7 +57,7 @@ def extract_naip_s3_path(metadata_request: stac_pb2.MetadataRequest,
                          year: int,
                          usgsid: str,
                          image_name: str,
-                         metadata_result: stac_proto2_pb2.MetadataResult):
+                         metadata_result: stac_item_result_pb2.MetadataResult):
     if metadata_request.eo_bands == stac_pb2.RGB_BANDS:
         return
 
@@ -81,9 +82,9 @@ def extract_naip_s3_path(metadata_request: stac_pb2.MetadataRequest,
         if bucket == 'naip-analytic':
             asset_types = [stac_pb2.MRF_XML, stac_pb2.MRF, stac_pb2.MRF_IDX, stac_pb2.LERC]
             for asset_type in asset_types:
-                write_asset(s3_path_template, imagery_bands, asset_type, metadata_result.asset_map)
+                write_asset(s3_path_template, imagery_bands, asset_type, metadata_result.assets)
         else:
-            write_asset(s3_path_template, imagery_bands, stac_pb2.GEOTIFF, metadata_result.asset_map)
+            write_asset(s3_path_template, imagery_bands, stac_pb2.GEOTIFF, metadata_result.assets)
 
 
 

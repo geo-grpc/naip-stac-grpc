@@ -18,7 +18,7 @@ For additional information, contact:
 email: info@echoparklabs.io
 """
 
-from epl.protobuf import stac_proto2_pb2
+from epl.protobuf import stac_item_result_pb2 as stac_item
 from datetime import datetime, date, timezone
 from typing import Tuple, List, Dict
 from collections import namedtuple
@@ -33,6 +33,8 @@ Repeated = namedtuple('Repeated', ['value'])
 Map = namedtuple('Map', ['key', 'value'])
 
 
+# help parsing from trianta2
+# https://gist.github.com/davidraleigh/fb13fa18e74e820031628f37d0e04927
 def _field_type(field, context):
     """Helper that returns either a str or nametuple corresponding to the field type"""
     if field.message_type is not None:
@@ -91,11 +93,11 @@ def timestamp_from_datetime(dt):
     return ts
 
 
-def to_metadata_result(query_result_row: Tuple, header: List, db_message_map: Dict) -> stac_proto2_pb2.MetadataResult:
+def to_metadata_result(query_result_row: Tuple, header: List, db_message_map: Dict) -> stac_item.MetadataResult:
     context = dict()
-    message_as_namedtuple(stac_proto2_pb2.DESCRIPTOR.message_types_by_name['MetadataResult'], context)
+    message_as_namedtuple(stac_item.DESCRIPTOR.message_types_by_name['MetadataResult'], context)
 
-    metadata_results = stac_proto2_pb2.MetadataResult()
+    metadata_results = stac_item.MetadataResult()
     for index, item in enumerate(query_result_row):
         db_key = header[index]
         if db_key not in db_message_map:
@@ -119,7 +121,7 @@ def to_metadata_result(query_result_row: Tuple, header: List, db_message_map: Di
             else:
                 raise Exception("geometry type not defined")
             # TODO if there's a spatial reference should be added to data
-        elif context['BBoxField'] == proto_type:
-            print('BBoxField')
+        elif context['EnvelopeData'] == proto_type:
+            print('EnvelopeData')
 
     return metadata_results

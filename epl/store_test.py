@@ -1,8 +1,7 @@
 import unittest
 from epl.protobuf import geometry_operators_pb2 as geometry
 from epl.protobuf import stac_pb2 as stac
-from swiftera import store
-from swiftera import parse
+from epl import store, parse
 from google.protobuf.timestamp_pb2 import Timestamp
 
 from datetime import datetime, timezone
@@ -123,19 +122,19 @@ class TestStore(unittest.TestCase):
     def test_complex_1(self):
         # date range to search
         timestamp = parse.timestamp_from_datetime(datetime(2016, 8, 13))
-        timestamp_range = parse.timestamp_from_datetime(datetime(2018, 8, 13))
+        timestamp_range = parse.timestamp_from_datetime(datetime(2016, 8, 13))
         src_img_date = stac.TimestampField(value=timestamp, rel_type=stac.FIELD_RANGE, range_value=timestamp_range)
 
         # gsd value
         eo_gsd = stac.FloatField(value=0.6, rel_type=stac.FIELD_LESS_EQUAL)
 
-        # state initials
-        filename = stac.StringField(value="m_4112305_nw_10_h_20160813_20161004.tif")
+        # the file name isn't the id, we're just placing it here for now
+        id = stac.StringField(value="m_4112305_nw_10_h_20160813_20161004.tif")
 
         # request object
         metadata_request = stac.MetadataRequest(src_img_date=src_img_date,
                                                 eo_gsd=eo_gsd,
-                                                filename=filename)
+                                                id=id)
 
         query = self.postgres_access.construct_query(metadata_request)
         result = self.postgres_access.execute_query(query)
@@ -144,7 +143,7 @@ class TestStore(unittest.TestCase):
     def test_geometry(self):
         # 42.6609° N, 77.0539° W
         eo_geometry = stac.GeometryField(geometry=geometry.GeometryData(wkt="POINT(-77.0539 42.6609)"))
-        metadata_request = stac.MetadataRequest(eo_geometry=eo_geometry)
+        metadata_request = stac.MetadataRequest(geometry=eo_geometry)
 
         query = self.postgres_access.construct_query(metadata_request)
         result = list(self.postgres_access.execute_query(query))
@@ -153,7 +152,7 @@ class TestStore(unittest.TestCase):
 
     def test_metadata_results(self):
         eo_geometry = stac.GeometryField(geometry=geometry.GeometryData(wkt="POINT(-77.0539 42.6609)"))
-        metadata_request = stac.MetadataRequest(eo_geometry=eo_geometry)
+        metadata_request = stac.MetadataRequest(geometry=eo_geometry)
 
         query = self.postgres_access.construct_query(metadata_request)
         query_result = self.postgres_access.execute_query(query)
@@ -164,16 +163,16 @@ class TestStore(unittest.TestCase):
             self.assertFalse(metadata_result.HasField("eo_sun_elevation"))
             self.assertEqual(0.0, metadata_result.eo_sun_elevation)
 
-            self.assertTrue(metadata_result.HasField("eo_geometry"))
+            self.assertTrue(metadata_result.HasField("geometry"))
 
-            for key in metadata_result.asset_map:
-                eo_asset = metadata_result.asset_map[key]
-                self.assertTrue(eo_asset.bucket_ref.startswith("s3://naip-"))
-                self.assertEqual(stac.AWS, eo_asset.bucket_iaas_host)
-                self.assertEqual(stac.STAC_ASSET_TYPE.Value(key), eo_asset.eo_asset_type)
-                self.assertLess(0, eo_asset.eo_band & stac.GREEN_BAND)
-                self.assertLess(0, eo_asset.eo_band & stac.BLUE_BAND)
-                self.assertLess(0, eo_asset.eo_band & stac.RED_BAND)
-                self.assertLess(0, eo_asset.eo_band & stac.RGB_BANDS)
+            for key in metadata_result.assets:
+                asset = metadata_result.assets[key]
+                self.assertTrue(asset.bucket_ref.startswith("s3://naip-"))
+                self.assertEqual(stac.AWS, asset.bucket_iaas_host)
+                self.assertEqual(stac.ASSET_TYPE.Value(key), asset.asset_type)
+                self.assertLess(0, asset.eo_band & stac.GREEN_BAND)
+                self.assertLess(0, asset.eo_band & stac.BLUE_BAND)
+                self.assertLess(0, asset.eo_band & stac.RED_BAND)
+                self.assertLess(0, asset.eo_band & stac.RGB_BANDS)
 
-                self.assertEqual(0, eo_asset.eo_band & stac.SWIR_1_BAND)
+                self.assertEqual(0, asset.eo_band & stac.SWIR_1_BAND)

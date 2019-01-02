@@ -23,7 +23,7 @@ syntax = "proto3";
 package swiftera.grpc;
 
 import "epl/protobuf/stac.proto";
-import "epl/protobuf/stac_proto2.proto";
+import "epl/protobuf/stac_item_result.proto";
 
 /*
  gRPC Interfaces for working with imagery operators

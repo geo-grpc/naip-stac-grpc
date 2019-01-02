@@ -19,8 +19,9 @@ email: info@echoparklabs.io
 """
 
 from epl.protobuf import stac_pb2 as stac
-from epl.protobuf import stac_proto2_pb2
-from swiftera import parse, asset
+from epl.protobuf import stac_item_result_pb2 as stac_item
+from epl.protobuf import geometry_operators_pb2
+from epl import parse, asset
 from datetime import datetime, timezone
 
 from sqlalchemy import Table, Column, Integer, String, MetaData, Date, Float, create_engine
@@ -47,9 +48,8 @@ class PostgresStore:
             # at compile time that these values exist in proto definition
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['eo_gsd'].name: 'res',
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['src_img_date'].name: 'srcimgdate',
-            stac.MetadataRequest.DESCRIPTOR.fields_by_name['filename'].name: 'filename',
-            stac.MetadataRequest.DESCRIPTOR.fields_by_name['state_initials'].name: 'st',
-            stac.MetadataRequest.DESCRIPTOR.fields_by_name['eo_geometry'].name: 'wkb_geometry',
+            stac.MetadataRequest.DESCRIPTOR.fields_by_name['id'].name: 'filename',
+            stac.MetadataRequest.DESCRIPTOR.fields_by_name['geometry'].name: 'wkb_geometry',
         }
         self.db_message_map = {}
         for key in self.message_db_map:
@@ -75,7 +75,7 @@ class PostgresStore:
                 field_obj = getattr(message, field.name)
                 mapped_field = self.message_db_map[field.name]
 
-                if full_name == stac.BBoxField.DESCRIPTOR.full_name:
+                if full_name == geometry_operators_pb2.EnvelopeData.DESCRIPTOR.full_name:
                     print(full_name)
                 elif full_name == stac.GeometryField.DESCRIPTOR.full_name:
                     if field_obj.HasField("geometry"):
@@ -122,7 +122,7 @@ class PostgresStore:
         query_result = conn.execute(s)
         return query_result
 
-    def query_to_metadata_result(self, query_result: ResultProxy, metadata_request: stac.MetadataRequest) -> stac_proto2_pb2.MetadataResult:
+    def query_to_metadata_result(self, query_result: ResultProxy, metadata_request: stac.MetadataRequest) -> stac_item.MetadataResult:
         headers = [y[0] for y in query_result.context.result_column_struct[0]]
         for query_result_row in query_result:
             metadata_result = parse.to_metadata_result(query_result_row, headers, self.db_message_map)
