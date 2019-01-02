@@ -177,4 +177,4 @@ class TestStore(unittest.TestCase):
                 self.assertLess(0, asset.eo_band & stac.RED_BAND)
                 self.assertLess(0, asset.eo_band & stac.RGB_BANDS)
 
-                self.assertEqual(0, asset.eo_band & stac.SWIR_1_BAND)
+                self.assertEqual(0, asset.eo_band & stac.SWIR_16_BAND)
