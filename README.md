@@ -2,7 +2,7 @@
 demo of STAC + gRPC + NAIP
 
 ## STAC
-The definitions for a stac item response are in the `protos/epl/protobuf/stac_item_result.proto` file.
+The definitions for a stac item response are in the [`protos/epl/protobuf/stac_item_result.proto`](https://github.com/geo-grpc/naip-stac-grpc/blob/master/protos/epl/protobuf/stac_item_result.proto) file.
 
 
 ## Protocol Buffers and gPRC
