@@ -1,4 +1,4 @@
-# naip-stac-grpc
+# STAC + NAIP + gRPC Metadata Service
 This is a first version of a [gRPC](https://grpc.io/) service and [protobuf](https://developers.google.com/protocol-buffers/) definition for serving [NAIP](https://registry.opendata.aws/naip/) metadata that tries to be [STAC](https://github.com/radiantearth/stac-spec) compliant.
 
 ## STAC, Protocol Buffers, and gPRC
@@ -17,6 +17,9 @@ Protobuf definitions have fields that are indexed by field numbers. As we want p
 #### `proto2` vs `proto3`
 There are two different versions of the proto file format, `proto2` and `proto3` that are currently in use. For the message response, the `stac_item_result.proto` is defined for `proto2`. In protobuf, messages are like structs. They must have a default value even if that value hasn't been set, and in the name of compactness that value is 0. In proto2, the version 
 of our proto file for results, there is a method that allows you to check whether a field has been set (this is absent from `proto3`). That way you can ignore values that are 0, but doesn't represent the data. If the `HasField` method returns false, the data should be ignored. HasField, is a poor name, because there is still a field there is data, it's just the data isn't set by the creator of the message.
+
+#### Geometry 
+This stac experiment imports a geometry proto definition used in another gRPC project. One of the aspects of this geometry definition is that you can define your aoi geometry using a wkt, wkb, geojson or esrishape. GeoJSON shouldn't be the only option, especially if a user wants results that are more compact. By default this project returns wkb for compactness, though it can accept wkt or wkb as an input.
 
 ## Project Setup 
 
