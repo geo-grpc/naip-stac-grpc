@@ -1,22 +1,9 @@
 # naip-stac-grpc
-This is a first version of a gRPC service for serving NAIP metadata that tries to be STAC compliant.
-
-STAC is described in further detail here:
-* https://github.com/radiantearth/stac-spec
-* https://github.com/radiantearth/stac-spec/blob/master/item-spec/item-spec.md
-* https://github.com/radiantearth/stac-spec/tree/master/extensions/eo
-* https://medium.com/radiant-earth-insights/the-state-of-stac-talk-and-sprint-3-recap-cd8eda3b8bdb
-
-gRPC services, protobuf binary, and the proto files that define them can be used separately, but they were designed to be used together for microservices communication. They are part of an open source intiaitive from Google. They're based off of Google's own internal RPC framework, Stubby. More info can be found here:
-* https://grpc.io/
-* https://grpc.io/docs/quickstart/python.html
-* https://developers.google.com/protocol-buffers/
-
-NAIP data:
-AWS and ESRI teamed up to provide a bucket on s3 that is requester pays. More information here:
-* https://registry.opendata.aws/naip/
+This is a first version of a [gRPC](https://grpc.io/) service and [protobuf](https://developers.google.com/protocol-buffers/) definition for serving [NAIP](https://registry.opendata.aws/naip/) metadata that tries to be [STAC](https://github.com/radiantearth/stac-spec) compliant.
 
 ## STAC, Protocol Buffers, and gPRC
+
+#### Protobuf Defintions
 The definitions for a stac item response are in [`protos/epl/protobuf/stac_item_result.proto`](https://github.com/geo-grpc/naip-stac-grpc/blob/master/protos/epl/protobuf/stac_item_result.proto). It is copied from the protocol buffer for stac defined here:
 * https://github.com/geo-grpc/protobuf
 
@@ -24,7 +11,12 @@ There are a couple of distinctions from the STAC definitions.
 * there isn't a properties container on the item result object. It could be added, but for the purposes of the demo it made it more difficult. 
 * there isn't a bands array on the item result object.
 
+#### Protobuf Reserved Field Numbers
 Protobuf definitions have fields that are indexed by field numbers. As we want people to extend STAC for there own purposes the field numbers 201 to 500 are available for custom definitions. The field numbers from 1 to 200 and from 501 to max are reserved for STAC definitions. More keys could be released as needed.
+
+#### `proto2` vs `proto3`
+There are two different versions of the proto file format, `proto2` and `proto3` that are currently in use. For the message response, the `stac_item_result.proto` is defined for `proto2`. In protobuf, messages are like structs. They must have a default value even if that value hasn't been set, and in the name of compactness that value is 0. In proto2, the version 
+of our proto file for results, there is a method that allows you to check whether a field has been set (this is absent from `proto3`). That way you can ignore values that are 0, but doesn't represent the data. If the `HasField` method returns false, the data should be ignored. HasField, is a poor name, because there is still a field there is data, it's just the data isn't set by the creator of the message.
 
 ## Project Setup 
 
@@ -72,5 +64,21 @@ pytest
 ```
 
 To test the service you can open a terminal and run `python3 service.py` and from another terminal run `python3 test_client.py`, or run the jupyter notebook from the repo.
+
+## Other Docs
+STAC is described in further detail here:
+* https://github.com/radiantearth/stac-spec
+* https://github.com/radiantearth/stac-spec/blob/master/item-spec/item-spec.md
+* https://github.com/radiantearth/stac-spec/tree/master/extensions/eo
+* https://medium.com/radiant-earth-insights/the-state-of-stac-talk-and-sprint-3-recap-cd8eda3b8bdb
+
+gRPC services, protobuf binary, and the proto files that define them can be used separately, but they were designed to be used together for microservices communication. They are part of an open source intiaitive from Google. They're based off of Google's own internal RPC framework, Stubby. More info can be found here:
+* https://grpc.io/
+* https://grpc.io/docs/quickstart/python.html
+* https://developers.google.com/protocol-buffers/
+
+NAIP data:
+AWS and ESRI teamed up to provide a bucket on s3 that is requester pays. More information here:
+* https://registry.opendata.aws/naip/
 
 
