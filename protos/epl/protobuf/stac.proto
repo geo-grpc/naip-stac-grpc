@@ -49,14 +49,13 @@ enum SortDirection {
 }
 
 enum EO_PLATFORM {
-    UKNOWN_PLATFORM = 0;
+    UNKNOWN_PLATFORM = 0;
     LANDSAT_8 = 1;
     NAIP = 2; // should this be Aerial instead?
 }
 
 enum EO_INSTRUMENT {
     UNKNOWN_INSTRUMENT = 0;
-
 }
 
 enum EO_BAND {
@@ -160,8 +159,6 @@ message MetadataRequest {
     GeometryField geometry = 15;
 
     EO_BAND eo_bands = 16;
-
-
 
     reserved 17 to 200;
     TimestampField src_img_date = 201;

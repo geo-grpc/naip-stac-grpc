@@ -1,6 +1,9 @@
 # naip-stac-grpc
 demo of STAC + gRPC + NAIP
 
+## STAC
+The definitions for a stac item response are in the `protos/epl/protobuf/stac_item_result.proto` file.
+
 
 ## Protocol Buffers and gPRC
 protocol buffer for stac defined here:
@@ -36,3 +39,12 @@ brew install gdal2 --with-postgresql
 execute the `naip_import_aws.sh` script 
 
 ## Testing
+
+Once the `naip_import_aws.sh` script is finished and you have the database up and running you can run the tests. From within the repo directory you can call pytest to run all 
+```bash
+pytest
+```
+
+To test the service you can open a terminal and run `python3 service.py` and from another terminal run `test_client.py`, or run the jupyter notebook.
+
+
