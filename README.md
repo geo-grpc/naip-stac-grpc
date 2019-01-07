@@ -4,7 +4,7 @@ This is a first version of a [gRPC](https://grpc.io/) service and [protobuf](htt
 ## TLDR
 Requirements:
 * `aws` cli tool
-* AWS s3 requester pays authorization in config file in home directory
+* AWS s3 requester pays authorization ine ~/.aws/credentials (`aws_access_key_id` and `aws_secret_access_key`)
 * ogr2ogr with postgres extensions
 * docker
 Commands:
