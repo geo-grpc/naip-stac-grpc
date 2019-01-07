@@ -3,7 +3,7 @@ This is a first version of a [gRPC](https://grpc.io/) service and [protobuf](htt
 
 ## TLDR
 Requirements:
-* `aws` cli tool
+* `aws` [cli tool](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 * AWS s3 requester pays authorization ine ~/.aws/credentials (`aws_access_key_id` and `aws_secret_access_key`)
 * ogr2ogr with postgres extensions
 * docker
