@@ -11,6 +11,7 @@ Commands:
 ```bash
 git clone git@github.com:geo-grpc/naip-stac-grpc.git
 cd naip-stac-grpc
+virtualenv venv
 ./naip_import_aws.sh
 pip3 install -r requirements
 python3 setup.py install
