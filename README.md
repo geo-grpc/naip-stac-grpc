@@ -1,4 +1,7 @@
-# TLDR
+# STAC + NAIP + gRPC Metadata Service
+This is a first version of a [gRPC](https://grpc.io/) service and [protobuf](https://developers.google.com/protocol-buffers/) definition for serving [NAIP](https://registry.opendata.aws/naip/) metadata that tries to be [STAC](https://github.com/radiantearth/stac-spec) compliant.
+
+## TLDR
 Requirements:
 * `aws` cli tool
 * AWS s3 requester pays authorization in config file in home directory
@@ -14,9 +17,6 @@ python3 setup.py install
 python3 service.py
 python3 test_client.py
 ```
-
-# STAC + NAIP + gRPC Metadata Service
-This is a first version of a [gRPC](https://grpc.io/) service and [protobuf](https://developers.google.com/protocol-buffers/) definition for serving [NAIP](https://registry.opendata.aws/naip/) metadata that tries to be [STAC](https://github.com/radiantearth/stac-spec) compliant.
 
 ## STAC, Protocol Buffers, and gPRC
 
