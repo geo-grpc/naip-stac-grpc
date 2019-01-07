@@ -7,11 +7,13 @@ Requirements:
 * AWS s3 requester pays authorization ine ~/.aws/credentials (`aws configure` to setup)
 * `ogr2ogr` with postgres extensions
 * docker
+* virtualenv
 Commands:
 ```bash
 git clone git@github.com:geo-grpc/naip-stac-grpc.git
 cd naip-stac-grpc
 virtualenv venv
+source venv/bin/activate
 ./naip_import_aws.sh
 pip3 install -r requirements
 python3 setup.py install
