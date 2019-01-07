@@ -8,6 +8,7 @@ Requirements:
 * `ogr2ogr` with postgres extensions
 * docker
 * virtualenv
+
 Commands:
 ```bash
 git clone git@github.com:geo-grpc/naip-stac-grpc.git
