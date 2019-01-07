@@ -9,7 +9,7 @@ Requirements:
 * docker
 * virtualenv
 
-Commands:
+Commands (this will download a gig or more of shapefiles to your local machine):
 ```bash
 git clone git@github.com:geo-grpc/naip-stac-grpc.git
 cd naip-stac-grpc
@@ -78,7 +78,7 @@ GDAL + ogr2ogr + postgresql:
 brew install gdal2 --with-postgresql
 ```
 
-To collect all the data data from the AWS NAIP shapefiles you'll need to execute the included bash script, `naip_import_aws.sh`.
+To collect all the data data from the AWS NAIP shapefiles (a gig or more) you'll need to execute the included bash script, `naip_import_aws.sh`.
 
 ## Testing
 
