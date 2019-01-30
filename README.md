@@ -7,7 +7,7 @@ Requirements:
 * AWS s3 requester pays authorization in ~/.aws/credentials (`aws configure` to setup)
 * `ogr2ogr` with postgres extensions
 * docker
-* virtualenv
+* [virtualenv](https://virtualenv.pypa.io/en/latest/installation/)
 
 Commands (this will download a gig or more of shapefiles to your local machine):
 ```bash
