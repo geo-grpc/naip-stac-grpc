@@ -7,10 +7,10 @@ for state in "${STATES[@]}"
 do
    for year in $(seq 2011 $END_YEAR)
    do
-      echo s3://naip-visualization/$state/$year/60cm/index/
+      echo s3 cp s3://naip-visualization/$state/$year/60cm/index/ ./index/  --request-payer --recursive
       # if the bucket doesn't exist these copies won't do anything at all
       aws s3 cp s3://naip-visualization/$state/$year/60cm/index/ ./index/  --request-payer --recursive
-      echo s3://naip-visualization/$state/$year/100cm/index/
+      echo s3 cp s3://naip-visualization/$state/$year/100cm/index/ ./index/  --request-payer --recursive
       aws s3 cp s3://naip-visualization/$state/$year/100cm/index/ ./index/  --request-payer --recursive
    done
 done
