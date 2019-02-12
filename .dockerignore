@@ -3,3 +3,4 @@
 ./epl.egg-info
 ./index
 ./venv
+*.tar.gz

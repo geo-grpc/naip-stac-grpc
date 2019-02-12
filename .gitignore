@@ -1,4 +1,3 @@
-
 .idea
 venv
 index
@@ -8,3 +7,4 @@ dist
 epl.egg-info
 .ipynb_checkpoints/
 build/
+naip_visual_db-*

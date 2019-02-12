@@ -39,6 +39,9 @@ GRPC_PORT = os.getenv('GRPC_PORT', 50051)
 GRPC_CHAIN = os.getenv('GRPC_CHAIN', None)
 GRPC_KEY = os.getenv('GRPC_KEY', None)
 
+POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
+POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
+
 MAX_MESSAGE_MB = os.getenv('MAX_MESSAGE_MB', 64)
 BYTES_PER_MB = 1024 * 1024
 # https://github.com/grpc/grpc/issues/7927
@@ -67,7 +70,7 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), options=GRPC_CHANNEL_OPTIONS)
 
     # db connection
-    engine = create_engine('postgresql://user:cabbage@localhost:5432/testdb', echo=True)
+    engine = create_engine('postgresql://user:cabbage@{0}:{1}/testdb'.format(POSTGRES_HOST, POSTGRES_PORT), echo=True)
 
     # add metadata service
     naip_grpc.add_MetadataOperatorsServicer_to_server(MetadataServicer(engine), server)

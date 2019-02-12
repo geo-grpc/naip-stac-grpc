@@ -1,0 +1,29 @@
+version: '3'
+services:
+  naip-metadata:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    networks:
+      - naip
+    ports:
+      - "50051:50051"
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+
+  db:
+    image: mdillon/postgis
+    ports:
+      - "5432:5432"
+    networks:
+      - naip
+    environment:
+      - POSTGRES_PASSWORD=cabbage
+      - POSTGRES_USER=user
+      - POSTGRES_DB=testdb
+
+networks:
+  naip: {}
