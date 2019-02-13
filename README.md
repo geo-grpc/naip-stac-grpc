@@ -76,7 +76,7 @@ This stac experiment imports a geometry proto definition used in another gRPC pr
 #### Requirements
 install requirements:
 ```bash
-pip3 install -r requirements
+pip3 install -r requirements.txt
 ```
 
 #### Protoc Compile Step (Optional)
