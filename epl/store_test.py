@@ -1,14 +1,20 @@
 import unittest
-from epl.protobuf import geometry_operators_pb2 as geometry
-from epl.protobuf import stac_pb2 as stac
-from epl import store, parse
-from google.protobuf.timestamp_pb2 import Timestamp
+import os
 
 from datetime import datetime, timezone
 
 from sqlalchemy import Table, Column, Integer, String, MetaData, Date, Float, create_engine
 from geoalchemy2 import Geometry
 from sqlalchemy.sql import select, and_
+from google.protobuf.timestamp_pb2 import Timestamp
+
+from epl.protobuf import geometry_operators_pb2 as geometry
+from epl.protobuf import stac_pb2 as stac
+from epl import store, parse
+
+
+POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
+POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
 
 metadata = MetaData()
 naip_visual = Table('naip_visual', metadata,
@@ -22,7 +28,8 @@ naip_visual = Table('naip_visual', metadata,
 
 class TestStore(unittest.TestCase):
     def setUp(self):
-        engine = create_engine('postgresql://user:cabbage@localhost:5432/testdb', echo=True)
+        engine = create_engine('postgresql://user:cabbage@{0}:{1}/testdb'.format(POSTGRES_HOST, POSTGRES_PORT),
+                               echo=True)
         self.postgres_access = store.PostgresStore(db_engine=engine)
 
     def test_simple_date_2(self):
@@ -39,7 +46,8 @@ class TestStore(unittest.TestCase):
         offset = 0
         current_and = None
         if metadata_req:
-            current_and = and_(naip_visual.c.srcimgdate >= datetime.fromtimestamp(metadata_req.src_img_date.value.seconds, timezone.utc))
+            current_and = and_(naip_visual.c.srcimgdate >= datetime.fromtimestamp(
+                metadata_req.src_img_date.value.seconds, timezone.utc))
         s = select([naip_visual], current_and).limit(limit).offset(offset)
 
         conn = self.postgres_access.db_engine.connect()

@@ -19,7 +19,7 @@ email: info@echoparklabs.io
 """
 
 from epl.protobuf import stac_item_result_pb2 as stac_item
-from datetime import datetime, date, timezone
+from datetime import date, timezone
 from typing import Tuple, List, Dict
 from collections import namedtuple
 from google.protobuf.descriptor import FieldDescriptor

@@ -1,6 +1,7 @@
 version: '3'
 services:
-  naip-metadata:
+  naip-stac-grpc:
+    image: us.gcr.io/echoparklabs/naip-stac-grpc
     build:
       context: .
       dockerfile: Dockerfile

@@ -4,3 +4,4 @@
 ./index
 ./venv
 *.tar.gz
+**/__pycache__

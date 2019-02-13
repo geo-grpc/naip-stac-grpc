@@ -88,8 +88,3 @@ def extract_naip_s3_path(metadata_request: stac_pb2.MetadataRequest,
                 write_asset(s3_path_template, imagery_bands, asset_type, metadata_result.assets)
         else:
             write_asset(s3_path_template, imagery_bands, stac_pb2.GEOTIFF, metadata_result.assets)
-
-
-
-
-

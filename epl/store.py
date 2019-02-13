@@ -24,7 +24,7 @@ from epl.protobuf import geometry_operators_pb2
 from epl import parse, asset
 from datetime import datetime, timezone
 
-from sqlalchemy import Table, Column, Integer, String, MetaData, Date, Float, create_engine
+from sqlalchemy import Table, Column, Integer, String, MetaData, Date, Float
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKTElement, WKBElement
 from sqlalchemy.sql import select, and_
@@ -123,7 +123,9 @@ class PostgresStore:
         query_result = conn.execute(s)
         return query_result
 
-    def query_to_metadata_result(self, query_result: ResultProxy, metadata_request: stac.MetadataRequest) -> stac_item.MetadataResult:
+    def query_to_metadata_result(self,
+                                 query_result: ResultProxy, metadata_request: stac.MetadataRequest) -> \
+            stac_item.MetadataResult:
         headers = [y[0] for y in query_result.context.result_column_struct[0]]
         for query_result_row in query_result:
             metadata_result = parse.to_metadata_result(query_result_row, headers, self.db_message_map)
