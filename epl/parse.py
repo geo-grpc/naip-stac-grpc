@@ -18,7 +18,7 @@ For additional information, contact:
 email: info@echoparklabs.io
 """
 
-from epl.protobuf import stac_item_result_pb2 as stac_item
+from epl.protobuf import stac_pb2
 from datetime import datetime, date, timezone
 from typing import Tuple, List, Dict
 from collections import namedtuple
@@ -94,11 +94,11 @@ def timestamp_from_datetime(dt):
     return ts
 
 
-def to_metadata_result(query_result_row: Tuple, header: List, db_message_map: Dict) -> stac_item.MetadataResult:
+def to_metadata_result(query_result_row: Tuple, header: List, db_message_map: Dict) -> stac_pb2.MetadataResult:
     context = dict()
-    message_as_namedtuple(stac_item.DESCRIPTOR.message_types_by_name['MetadataResult'], context)
+    message_as_namedtuple(stac_pb2.DESCRIPTOR.message_types_by_name['MetadataResult'], context)
 
-    metadata_results = stac_item.MetadataResult()
+    metadata_results = stac_pb2.MetadataResult()
     for index, item in enumerate(query_result_row):
         db_key = header[index]
         if db_key not in db_message_map:

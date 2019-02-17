@@ -18,7 +18,7 @@ For additional information, contact:
 email: info@echoparklabs.io
 """
 
-from epl.protobuf import stac_pb2, stac_item_result_pb2
+from epl.protobuf import stac_pb2
 
 asset_map = {
     'UNKNOWN_ASSET': 0,
@@ -43,10 +43,10 @@ def write_asset(s3_path_template: str,
                 metadata_asset_map):
     extension = naip_s3_assets[asset_type]
     s3_path = s3_path_template + extension
-    asset = stac_item_result_pb2.Asset(eo_band=band_type,
-                                       bucket_iaas_host=stac_pb2.AWS,
-                                       bucket_ref=s3_path,
-                                       asset_type=asset_type)
+    asset = stac_pb2.Asset(eo_band=band_type,
+                           bucket_iaas_host=stac_pb2.AWS,
+                           bucket_ref=s3_path,
+                           asset_type=asset_type)
 
     asset_band_key = "{0}-{1}".format(stac_pb2.ASSET_TYPE.Name(asset_type), stac_pb2.EO_BAND.Name(band_type))
 
@@ -58,7 +58,7 @@ def extract_naip_s3_path(metadata_request: stac_pb2.MetadataRequest,
                          year: int,
                          usgsid: str,
                          image_name: str,
-                         metadata_result: stac_item_result_pb2.MetadataResult):
+                         metadata_result: stac_pb2.MetadataResult):
     if metadata_request.eo_bands == stac_pb2.RGB_BANDS:
         return
 

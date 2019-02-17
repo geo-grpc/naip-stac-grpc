@@ -23,8 +23,7 @@ email: info@echoparklabs.io
 import grpc
 import time
 import os
-import epl.protobuf.stac_pb2 as stac
-import epl.protobuf.stac_item_result_pb2 as stac_item
+from epl.protobuf import stac_pb2
 import epl.grpc.naip_stac_pb2_grpc as naip_grpc
 import epl.store as store
 
@@ -54,8 +53,8 @@ class MetadataServicer(naip_grpc.MetadataOperatorsServicer):
         print("started metadata service")
 
     def Search(self,
-               metadata_request: stac.MetadataRequest,
-               context) -> stac_item.MetadataResult:
+               metadata_request: stac_pb2.MetadataRequest,
+               context) -> stac_pb2.MetadataResult:
         query = self.postgres_access.construct_query(metadata_request)
         query_result = self.postgres_access.execute_query(query)
         for metadata_result in self.postgres_access.query_to_metadata_result(query_result, metadata_request):
