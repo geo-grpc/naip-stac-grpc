@@ -23,7 +23,7 @@ from epl.protobuf import geometry_operators_pb2
 from epl import parse, asset
 from datetime import datetime, timezone
 
-from sqlalchemy import Table, Column, Integer, String, MetaData, Date, Float, create_engine
+from sqlalchemy import Table, Column, Integer, String, MetaData, Date, Float
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKTElement, WKBElement
 from sqlalchemy.sql import select, and_

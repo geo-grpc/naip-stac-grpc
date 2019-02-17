@@ -1,0 +1,7 @@
+./build
+./dist
+./epl.egg-info
+./index
+./venv
+*.tar.gz
+**/__pycache__

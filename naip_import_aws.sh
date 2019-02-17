@@ -3,18 +3,6 @@ STATES=(al ar az ca co ct de fl ga ia id il in ks ky la ma md me mi mn mo ms mt 
 END_YEAR=$(date +'%Y')
 FAILING_SHAPEFILES=(naip_3_172_6_fl naip_3_17_2_8_sc naip_3_17_2_2_pa)
 
-for state in "${STATES[@]}"
-do
-   for year in $(seq 2011 $END_YEAR)
-   do
-      echo s3://naip-visualization/$state/$year/60cm/index/
-      # if the bucket doesn't exist these copies won't do anything at all
-      aws s3 cp s3://naip-visualization/$state/$year/60cm/index/ ./index/  --request-payer --recursive
-      echo s3://naip-visualization/$state/$year/100cm/index/
-      aws s3 cp s3://naip-visualization/$state/$year/100cm/index/ ./index/  --request-payer --recursive
-   done
-done
-
 cd index
 
 # TODO contact ESRI bucket owner about broken prj files
@@ -22,7 +10,10 @@ cd index
 # naip_3_13_2_1_al
 # GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]
 docker rm -f naip-metadata-postgis
-docker run -d --env POSTGRES_PASSWORD=cabbage --env POSTGRES_USER=user --env POSTGRES_DB=testdb -p 5432:5432 --name=naip-metadata-postgis mdillon/postgis
+docker run -d --env POSTGRES_PASSWORD=cabbage \
+              --env POSTGRES_USER=user \
+              --env POSTGRES_DB=testdb \
+              -p 5432:5432 --name=naip-metadata-postgis mdillon/postgis
 echo starting db
 sleep 40
 
@@ -82,9 +73,5 @@ docker exec -it naip-metadata-postgis /bin/bash -c "psql -qtA -d testdb -U user 
 # USING to_date(srcimgdate, 'YYYYMMDD');
 echo altering dates from varchar to dates
 docker exec -it naip-metadata-postgis /bin/bash -c "psql -qtA -d testdb -U user -c \"ALTER TABLE naip_visual ALTER COLUMN verdate TYPE DATE USING to_date(verdate, 'YYYYMMDD'); ALTER TABLE naip_visual ALTER COLUMN srcimgdate TYPE DATE USING to_date(srcimgdate, 'YYYYMMDD');\""
-
-# dump postgres table to file
-echo dumping everything to file
-docker exec naip-metadata-postgis pg_dump -U user -F t -t naip_visual testdb | gzip > ./naip_visual_db-$(date +%Y-%m-%d).tar.gz
 
 echo finished all tasks!

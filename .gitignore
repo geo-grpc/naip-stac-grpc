@@ -1,10 +1,10 @@
-
 .idea
 venv
 index
 *.tar.gz
-__pycache__/
+**/__pycache__
 dist
 epl.egg-info
 .ipynb_checkpoints/
 build/
+naip_visual_db-*

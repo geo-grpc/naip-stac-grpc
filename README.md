@@ -1,6 +1,56 @@
 # STAC + NAIP + gRPC Metadata Service
 This is a first version of a [gRPC](https://grpc.io/) service and [protobuf](https://developers.google.com/protocol-buffers/) definition for serving [NAIP](https://registry.opendata.aws/naip/) metadata that tries to be [STAC](https://github.com/radiantearth/stac-spec) compliant.
 
+## TLDR
+Requirements:
+* `aws` [cli tool](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+* AWS s3 requester pays authorization in ~/.aws/credentials (`aws configure` to setup)
+* `ogr2ogr` with postgres extensions
+* docker + docker-compose
+* [virtualenv](https://virtualenv.pypa.io/en/latest/installation/)
+
+#### Commands
+There are two different ways to test the gRPC service. One is with a postgis docker container and the other is with a docker-compose db+service. Both require this initial set of commands.
+
+Initial commands will download a gig or more of shapefiles to your local machine and prepare a database:
+```bash
+git clone git@github.com:geo-grpc/naip-stac-grpc.git
+cd naip-stac-grpc
+virtualenv venv
+source venv/bin/activate
+./download_shapefiles.sh
+./naip_import_aws.sh
+```
+
+Test version 1; test with the local docker database:
+```bash
+pip3 install -r requirements.txt
+python3 setup.py install
+python3 service.py
+python3 test_client.py
+```
+
+Test version 2; test with docker-compose initialized with a pg_dump file:
+```bash
+# dump postgres table to file
+docker exec naip-metadata-postgis pg_dump -U user -Fc \
+  -t naip_visual testdb > ./naip_visual_db-$(date +%Y-%m-%d)
+docker stop naip-metadata-postgis
+docker-compose up --build -d
+# wait for postgres db to initialize. you could omit the `-d` and 
+# watch for the initialization completion and execute the rest of 
+# the command from another window
+sleep 15
+docker exec -i naip-stac-grpc_db_1 pg_restore -C --clean --no-acl --no-owner \
+  -U user -d testdb < ./naip_visual_db-$(date +%Y-%m-%d)
+pip3 install -r requirements.txt
+python3 test_client.py
+```
+
+
+
+
+
 ## STAC, Protocol Buffers, and gPRC
 
 #### Protobuf Defintions
@@ -26,7 +76,7 @@ This stac experiment imports a geometry proto definition used in another gRPC pr
 #### Requirements
 install requirements:
 ```bash
-pip3 install -r requirements
+pip3 install -r requirements.txt
 ```
 
 #### Protoc Compile Step (Optional)
@@ -57,7 +107,7 @@ GDAL + ogr2ogr + postgresql:
 brew install gdal2 --with-postgresql
 ```
 
-To collect all the data data from the AWS NAIP shapefiles you'll need to execute the included bash script, `naip_import_aws.sh`.
+To collect all the data data from the AWS NAIP shapefiles (a gig or more) you'll need to execute the included bash script, `naip_import_aws.sh`.
 
 ## Testing
 

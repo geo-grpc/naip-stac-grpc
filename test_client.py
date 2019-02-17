@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 MB = 1024 * 1024
 GRPC_CHANNEL_OPTIONS = [('grpc.max_message_length', 64 * MB), ('grpc.max_receive_message_length', 64 * MB)]
-GRPC_SERVICE_PORT = os.getenv('GRPC_SERVICE_PORT', 50051)
-GRPC_SERVICE_HOST = os.getenv('GRPC_SERVICE_HOST', 'localhost')
-IMAGERY_SERVICE = "{0}:{1}".format(GRPC_SERVICE_HOST, GRPC_SERVICE_PORT)
+NAIP_SERVICE_PORT = os.getenv('NAIP_SERVICE_PORT', 50051)
+NAIP_SERVICE_HOST = os.getenv('NAIP_SERVICE_HOST', 'localhost')
+IMAGERY_SERVICE = "{0}:{1}".format(NAIP_SERVICE_HOST, NAIP_SERVICE_PORT)
 ip_reg = re.compile(r"[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}")
 
-if GRPC_SERVICE_HOST == "localhost" or ip_reg.match(GRPC_SERVICE_HOST):
+if NAIP_SERVICE_HOST == "localhost" or ip_reg.match(NAIP_SERVICE_HOST):
     channel = grpc.insecure_channel(IMAGERY_SERVICE, options=GRPC_CHANNEL_OPTIONS)
 else:
     channel_credentials = grpc.ssl_channel_credentials()
