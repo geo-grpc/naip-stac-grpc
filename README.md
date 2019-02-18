@@ -41,7 +41,7 @@ docker-compose up --build -d
 # watch for the initialization completion and execute the rest of 
 # the command from another window
 sleep 15
-docker exec -i naip-stac-grpc_db_1 pg_restore -C --clean --no-acl --no-owner \
+docker exec -i naip-stac-grpc-db-c pg_restore -C --clean --no-acl --no-owner \
   -U user -d testdb < ./naip_visual_db-$(date +%Y-%m-%d)
 pip3 install -r requirements.txt
 python3 test_client.py
