@@ -50,7 +50,7 @@ class PostgresStore:
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['id'].name: 'filename',
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['geometry'].name: 'wkb_geometry',
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['usgsid'].name: 'usgsid',
-            stac.MetadataRequest.DESCRIPTOR.fields_by_name['bbox'].name: 'wkb_geometry',
+            stac.MetadataRequest.DESCRIPTOR.fields_by_name['bbox'].name: 'bbox',
         }
         self.db_message_map = {}
         for key in self.message_db_map:
@@ -94,7 +94,7 @@ class PostgresStore:
                         elif geometry_value.wkb:
                             geometry_element = WKBElement(geometry_value.wkb, srid=4326)
 
-                        if geometry_element:
+                        if geometry_element is not None:
                             current_and = self.add_and(naip_visual.c.wkb_geometry.ST_Intersects(geometry_element),
                                                        current_and)
                         else:
