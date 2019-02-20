@@ -50,6 +50,7 @@ class PostgresStore:
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['id'].name: 'filename',
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['geometry'].name: 'wkb_geometry',
             stac.MetadataRequest.DESCRIPTOR.fields_by_name['usgsid'].name: 'usgsid',
+            stac.MetadataRequest.DESCRIPTOR.fields_by_name['bbox'].name: 'wkb_geometry',
         }
         self.db_message_map = {}
         for key in self.message_db_map:
@@ -73,20 +74,34 @@ class PostgresStore:
             if message.HasField(field.name):
                 full_name = field.message_type.full_name
                 field_obj = getattr(message, field.name)
-                mapped_field = self.message_db_map[field.name]
 
                 if full_name == geometry_operators_pb2.EnvelopeData.DESCRIPTOR.full_name:
-                    print(full_name)
+                    envelope_data = field_obj
+                    # ooooh, this is messy :(
+                    wkt_polygon = "POLYGON (({0} {1}, {2} {1}, {2} {3}, {0} {3}, {0} {1}))".format(envelope_data.xmin,
+                                                                                                   envelope_data.ymin,
+                                                                                                   envelope_data.xmax,
+                                                                                                   envelope_data.ymax)
+                    geometry_element = WKTElement(wkt_polygon, srid=4326)
+                    current_and = self.add_and(naip_visual.c.wkb_geometry.ST_Intersects(geometry_element), current_and)
+
                 elif full_name == stac.GeometryField.DESCRIPTOR.full_name:
                     if field_obj.HasField("geometry"):
                         geometry_value = getattr(field_obj, "geometry")
+                        geometry_element = None
                         if geometry_value.wkt:
                             geometry_element = WKTElement(geometry_value.wkt, srid=4326)
                         elif geometry_value.wkb:
                             geometry_element = WKBElement(geometry_value.wkb, srid=4326)
 
-                    current_and = self.add_and(naip_visual.c.wkb_geometry.ST_Intersects(geometry_element), current_and)
+                        if geometry_element:
+                            current_and = self.add_and(naip_visual.c.wkb_geometry.ST_Intersects(geometry_element),
+                                                       current_and)
+                        else:
+                            # TODO log warning/error
+                            print("missing geometry data")
                 else:
+                    mapped_field = self.message_db_map[field.name]
                     value1 = getattr(field_obj, "value")
                     rel_type = getattr(field_obj, "rel_type")
                     value2 = getattr(field_obj, "range_value")

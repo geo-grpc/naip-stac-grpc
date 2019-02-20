@@ -12,7 +12,6 @@ from epl.protobuf import geometry_operators_pb2 as geometry
 from epl.protobuf import stac_pb2 as stac
 from epl import store, parse
 
-
 POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
 POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
 
@@ -153,6 +152,18 @@ class TestStore(unittest.TestCase):
         eo_geometry = stac.GeometryField(geometry=geometry.GeometryData(wkt="POINT(-77.0539 42.6609)"))
         metadata_request = stac.MetadataRequest(geometry=eo_geometry)
 
+        query = self.postgres_access.construct_query(metadata_request)
+        result = list(self.postgres_access.execute_query(query))
+
+        self.assertLessEqual(3, len(result))
+
+    def test_envelope(self):
+        eo_envelope = geometry.EnvelopeData(xmin=-77.06831821412604,
+                                            ymin=42.62239034158332,
+                                            xmax=-76.99425409850738,
+                                            ymax=42.69010108687761,
+                                            spatial_reference=geometry.SpatialReferenceData(wkid=4326))
+        metadata_request = stac.MetadataRequest(bbox=eo_envelope)
         query = self.postgres_access.construct_query(metadata_request)
         result = list(self.postgres_access.execute_query(query))
 
