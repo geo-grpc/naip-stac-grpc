@@ -32,9 +32,10 @@ python3 test_client.py
 
 Test version 2; test with docker-compose initialized with a pg_dump file:
 ```bash
+export PG_DB_DATA=naip_visual_db-$(date +%Y-%m-%d)
 # dump postgres table to file
 docker exec naip-metadata-postgis pg_dump -U user -Fc \
-  -t naip_visual testdb > ./naip_visual_db-$(date +%Y-%m-%d)
+  -t naip_visual testdb > ./$PG_DB_DATA
 docker stop naip-metadata-postgis
 docker-compose up --build -d
 # wait for postgres db to initialize. you could omit the `-d` and 
@@ -42,7 +43,7 @@ docker-compose up --build -d
 # the command from another window
 sleep 15
 docker exec -i naip-stac-grpc-db-c pg_restore -C --clean --no-acl --no-owner \
-  -U user -d testdb < ./naip_visual_db-$(date +%Y-%m-%d)
+  -U user -d testdb < ./$PG_DB_DATA
 pip3 install -r requirements.txt
 python3 test_client.py
 ```
