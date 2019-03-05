@@ -159,10 +159,10 @@ class TestStore(unittest.TestCase):
 
     def test_envelope(self):
         eo_envelope = geometry_pb2.EnvelopeData(xmin=-77.06831821412604,
-                                            ymin=42.62239034158332,
-                                            xmax=-76.99425409850738,
-                                            ymax=42.69010108687761,
-                                            spatial_reference=geometry_pb2.SpatialReferenceData(wkid=4326))
+                                                ymin=42.62239034158332,
+                                                xmax=-76.99425409850738,
+                                                ymax=42.69010108687761,
+                                                spatial_reference=geometry_pb2.SpatialReferenceData(wkid=4326))
         metadata_request = stac.MetadataRequest(bbox=eo_envelope)
         query = self.postgres_access.construct_query(metadata_request)
         result = list(self.postgres_access.execute_query(query))
