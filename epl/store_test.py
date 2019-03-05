@@ -8,7 +8,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy.sql import select, and_
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from epl.protobuf import geometry_operators_pb2 as geometry
+from epl.protobuf import geometry_pb2
 from epl.protobuf import stac_pb2 as stac
 from epl import store, parse
 
@@ -149,7 +149,7 @@ class TestStore(unittest.TestCase):
 
     def test_geometry(self):
         # 42.6609° N, 77.0539° W
-        eo_geometry = stac.GeometryField(geometry=geometry.GeometryData(wkt="POINT(-77.0539 42.6609)"))
+        eo_geometry = stac.GeometryField(geometry=geometry_pb2.GeometryData(wkt="POINT(-77.0539 42.6609)"))
         metadata_request = stac.MetadataRequest(geometry=eo_geometry)
 
         query = self.postgres_access.construct_query(metadata_request)
@@ -158,11 +158,11 @@ class TestStore(unittest.TestCase):
         self.assertLessEqual(3, len(result))
 
     def test_envelope(self):
-        eo_envelope = geometry.EnvelopeData(xmin=-77.06831821412604,
+        eo_envelope = geometry_pb2.EnvelopeData(xmin=-77.06831821412604,
                                             ymin=42.62239034158332,
                                             xmax=-76.99425409850738,
                                             ymax=42.69010108687761,
-                                            spatial_reference=geometry.SpatialReferenceData(wkid=4326))
+                                            spatial_reference=geometry_pb2.SpatialReferenceData(wkid=4326))
         metadata_request = stac.MetadataRequest(bbox=eo_envelope)
         query = self.postgres_access.construct_query(metadata_request)
         result = list(self.postgres_access.execute_query(query))
@@ -170,7 +170,7 @@ class TestStore(unittest.TestCase):
         self.assertLessEqual(3, len(result))
 
     def test_metadata_results(self):
-        eo_geometry = stac.GeometryField(geometry=geometry.GeometryData(wkt="POINT(-77.0539 42.6609)"))
+        eo_geometry = stac.GeometryField(geometry=geometry_pb2.GeometryData(wkt="POINT(-77.0539 42.6609)"))
         metadata_request = stac.MetadataRequest(geometry=eo_geometry)
 
         query = self.postgres_access.construct_query(metadata_request)

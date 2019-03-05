@@ -19,7 +19,7 @@ email: info@echoparklabs.io
 """
 
 from epl.protobuf import stac_pb2 as stac
-from epl.protobuf import geometry_operators_pb2
+from epl.protobuf import geometry_pb2
 from epl import parse, asset
 from datetime import datetime, timezone
 
@@ -75,7 +75,7 @@ class PostgresStore:
                 full_name = field.message_type.full_name
                 field_obj = getattr(message, field.name)
 
-                if full_name == geometry_operators_pb2.EnvelopeData.DESCRIPTOR.full_name:
+                if full_name == geometry_pb2.EnvelopeData.DESCRIPTOR.full_name:
                     envelope_data = field_obj
                     # ooooh, this is messy :(
                     wkt_polygon = "POLYGON (({0} {1}, {2} {1}, {2} {3}, {0} {3}, {0} {1}))".format(envelope_data.xmin,
